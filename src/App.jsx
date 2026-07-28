@@ -158,9 +158,111 @@ function App() {
 
 
         {page === "compte" && (
-          <div className="card">
-            <h2>👤 Mon compte</h2>
-            <p>Agent Kivana</p>
+          <div className="card account-card">
+            <div className="account-header" style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+              <div className="avatar" style={{width:72, height:72, borderRadius: '50%', background: '#eef2f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:32}}>
+                👤
+              </div>
+
+              <div style={{flex:1}}>
+                <h2 style={{margin:0}}>Agent Kivana</h2>
+                <p style={{margin:'4px 0', color:'#666'}}>agent@kivana.com</p>
+
+                <div style={{display:'flex', gap:8, alignItems:'center', marginTop:6}}>
+                  <span style={{background:'#e6f7ff', color:'#0366d6', padding:'4px 8px', borderRadius:12, fontSize:12}}>Agent actif</span>
+                  <span style={{background:'#f0f0f0', padding:'4px 8px', borderRadius:12, fontSize:12}}>ID: KIV-0001</span>
+                </div>
+              </div>
+
+              <div style={{textAlign:'right'}}>
+                <button className="primary-btn" onClick={() => alert('Modifier le profil - fonctionnalité non implémentée')}>Modifier le profil</button>
+              </div>
+            </div>
+
+            <hr style={{margin:'16px 0', border:'none', borderTop:'1px solid #eee'}} />
+
+            <section className="account-section">
+              <h3>👤 Informations personnelles</h3>
+              <div className="info-list">
+                <div className="info-row">
+                  <strong>Nom</strong>
+                  <span>Agent Kivana</span>
+                </div>
+
+                <div className="info-row">
+                  <strong>ID agent</strong>
+                  <span>KIV-0001</span>
+                </div>
+
+                <div className="info-row">
+                  <strong>Organisation</strong>
+                  <span>Kivana</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="account-section">
+              <h3>🏢 Organisation</h3>
+              <div className="info-list">
+                <div className="info-row">
+                  <strong>Nom</strong>
+                  <span>Kivana</span>
+                </div>
+
+                <div className="info-row">
+                  <strong>Rôle</strong>
+                  <span>Agent de contrôle des billets</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="account-section">
+              <h3>🔐 Sécurité</h3>
+              <div className="security-list">
+                <div className="security-row">
+                  <span>🔐 Modifier le mot de passe</span>
+                  <button className="ghost-btn" onClick={() => alert('Changer le mot de passe - fonctionnalité non implémentée')}>Changer</button>
+                </div>
+
+                <div className="security-row">
+                  <span>📱 Appareils connectés</span>
+                  <button className="ghost-btn" onClick={() => alert('Gestion des appareils - fonctionnalité non implémentée')}>Gérer</button>
+                </div>
+
+                <div className="security-row">
+                  <span>🔔 Préférences de notifications</span>
+                  <button className="ghost-btn" onClick={() => alert('Préférences de notifications - fonctionnalité non implémentée')}>Modifier</button>
+                </div>
+              </div>
+            </section>
+
+            <section className="account-section">
+              <h3>🎨 Application</h3>
+              <div className="info-list">
+                <div className="info-row" style={{alignItems:'center'}}>
+                  <strong>Apparence</strong>
+                  <div style={{display:'flex', gap:8}}>
+                    <label style={{display:'flex', alignItems:'center', gap:6}}><input type="radio" name="theme" defaultChecked /> Clair</label>
+                    <label style={{display:'flex', alignItems:'center', gap:6}}><input type="radio" name="theme" /> Sombre</label>
+                  </div>
+                </div>
+
+                <div className="info-row">
+                  <strong>À propos</strong>
+                  <div style={{textAlign:'right'}}>
+                    <div>Version 1.0.0</div>
+                    <div>Application Kivana Scanner</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className="account-actions" style={{display:'flex', gap:8, marginTop:16}}>
+              <button className="primary-btn" onClick={() => alert('Modifier le profil - fonctionnalité non implémentée')}>✏️ Modifier le profil</button>
+              <button className="secondary-btn" onClick={() => alert('Changer le mot de passe - fonctionnalité non implémentée')}>🔐 Changer le mot de passe</button>
+              <button className="danger-btn" onClick={() => { setPage('accueil'); alert('Vous êtes déconnecté'); }}>⛔ Déconnexion</button>
+            </div>
+
           </div>
         )}
 
@@ -169,7 +271,7 @@ function App() {
 
       <nav className="bottom-nav">
 
-        <button onClick={() => setPage("accueil")}>
+        <button onClick={() => setPage("accueil") }>
           🏠
           <span>Accueil</span>
         </button>
@@ -179,12 +281,12 @@ function App() {
           <span>Scanner</span>
         </button>
 
-        <button onClick={() => setPage("historique")}>
+        <button onClick={() => setPage("historique") }>
           📋
           <span>Historique</span>
         </button>
 
-        <button onClick={() => setPage("compte")}>
+        <button onClick={() => setPage("compte") }>
           👤
           <span>Compte</span>
         </button>
