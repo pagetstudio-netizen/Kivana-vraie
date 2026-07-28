@@ -53,13 +53,14 @@ function App() {
     e.preventDefault()
     setLoginError("")
 
-    // Compte de test temporaire
+    // Comptes de test temporaires (base de données fictive)
     if (loginEmail === "agent@kivana.com" && loginPassword === "Kivana2026") {
       const u = {
         name: "Agent Kivana",
         email: "agent@kivana.com",
         id: "KIV-0001",
-        org: "Kivana"
+        org: "Kivana",
+        role: "Agent de contrôle des billets"
       }
       setUser(u)
       localStorage.setItem("kivana_user", JSON.stringify(u))
@@ -67,9 +68,27 @@ function App() {
       setLoginEmail("")
       setLoginPassword("")
       setLoginError("")
-    } else {
-      setLoginError("Email ou mot de passe incorrect")
+      return
     }
+
+    if (loginEmail === "pagetstudio@gmail.com" && loginPassword === "AAbb11##") {
+      const u = {
+        name: "Paget Studio",
+        email: "pagetstudio@gmail.com",
+        id: "KIV-ADMIN-0001",
+        org: "Kivana",
+        role: "Administrateur"
+      }
+      setUser(u)
+      localStorage.setItem("kivana_user", JSON.stringify(u))
+      setPage("accueil")
+      setLoginEmail("")
+      setLoginPassword("")
+      setLoginError("")
+      return
+    }
+
+    setLoginError("Email ou mot de passe incorrect")
   }
 
   const handleLogout = () => {
@@ -144,7 +163,11 @@ function App() {
                 Se connecter
               </button>
 
-              <p style={{marginTop:12, color:'#666', fontSize:13}}>Compte de test: agent@kivana.com / Kivana2026</p>
+              <div style={{marginTop:12, color:'#666', fontSize:13}}>
+                <div>Comptes de test :</div>
+                <div>• agent@kivana.com / Kivana2026 (Agent)</div>
+                <div>• pagetstudio@gmail.com / AAbb11## (Administrateur)</div>
+              </div>
             </form>
           </div>
         ) : (
@@ -307,7 +330,7 @@ function App() {
 
                     <div className="info-row">
                       <strong>Rôle</strong>
-                      <span>Agent de contrôle des billets</span>
+                      <span>{user?.role || 'Agent de contrôle des billets'}</span>
                     </div>
                   </div>
                 </section>
