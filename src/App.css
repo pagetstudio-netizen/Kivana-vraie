@@ -1,0 +1,161 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+}
+
+.app {
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+
+/* HEADER FIXE */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 1000;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.header-left {
+  text-align: left;
+}
+
+.fixed-header h1 {
+  margin: 0;
+  font-size: 23px;
+  color: #2563eb;
+}
+
+.fixed-header p {
+  margin: 5px 0 0;
+  color: #666;
+}
+
+.notification-btn {
+  border: none;
+  background: #eff6ff;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+
+/* CONTENU */
+.content {
+  padding: 120px 20px 20px;
+}
+
+
+.section-title {
+  text-align: left;
+  margin-top: 25px;
+}
+
+
+/* CARTES */
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+
+/* BOUTON SCAN */
+.scanButton {
+  width: 100%;
+  padding: 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 18px;
+  background: #2563eb;
+  color: white;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+
+/* STATISTIQUES */
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stats div {
+  flex: 1;
+  background: white;
+  padding: 20px 10px;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.stats b {
+  display: block;
+  font-size: 28px;
+  color: #2563eb;
+}
+
+
+/* ACTUALITES */
+.banner {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+}
+
+.banner img {
+  min-width: 280px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+
+/* NOTIFICATIONS */
+.notification-item {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 15px;
+  margin: 12px 0;
+  text-align: left;
+}
+
+
+/* NAVIGATION */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+}
+
+.bottom-nav button {
+  border: none;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.result {
+  background: #dcfce7;
+  padding: 15px;
+  border-radius: 15px;
+}
