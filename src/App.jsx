@@ -278,119 +278,135 @@ function App() {
 
             {/* === ONGLET COMPTE & SOUS-PAGES === */}
             {page === "compte" && (
-              <div className="card account-card">
-                <div className="account-header" style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                  <div className="avatar" style={{width:72, height:72, borderRadius: '50%', background: '#eef2f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:32}}>
-                    👤
+              <div className="account-screen">
+                <div className="account-hero">
+                  <div className="account-top">
+                    <div className="account-title">Compte</div>
+                    <button
+                      className="hero-notif"
+                      aria-label="Notifications"
+                      onClick={() => setPage("notifications")}
+                    >
+                      🔔
+                    </button>
                   </div>
 
-                  <div style={{flex:1}}>
-                    <h2 style={{margin:0}}>{user?.name || 'Agent Kivana'}</h2>
-                    <p style={{margin:'4px 0', color:'#666'}}>{user?.email || 'agent@kivana.com'}</p>
+                  <div className="account-hero-content">
+                    <div className="hero-avatar" aria-hidden>👤</div>
 
-                    <div style={{display:'flex', gap:8, alignItems:'center', marginTop:6}}>
-                      <span style={{background:'#e6f7ff', color:'#0366d6', padding:'4px 8px', borderRadius:12, fontSize:12}}>Agent actif</span>
-                      <span style={{background:'#f0f0f0', padding:'4px 8px', borderRadius:12, fontSize:12}}>ID: {user?.id || 'KIV-0001'}</span>
-                    </div>
-                  </div>
-
-                  <div style={{textAlign:'right'}}>
-                    <button className="primary-btn" onClick={() => setPage('compte-edit')}>Modifier le profil</button>
-                  </div>
-                </div>
-
-                <hr style={{margin:'16px 0', border:'none', borderTop:'1px solid #eee'}} />
-
-                <section className="account-section">
-                  <h3>👤 Informations personnelles</h3>
-                  <div className="info-list">
-                    <div className="info-row">
-                      <strong>Nom</strong>
-                      <span>{user?.name || 'Agent Kivana'}</span>
-                    </div>
-
-                    <div className="info-row">
-                      <strong>ID agent</strong>
-                      <span>{user?.id || 'KIV-0001'}</span>
-                    </div>
-
-                    <div className="info-row">
-                      <strong>Organisation</strong>
-                      <span>{user?.org || 'Kivana'}</span>
-                    </div>
-                  </div>
-                </section>
-
-                <section className="account-section">
-                  <h3>🏢 Organisation</h3>
-                  <div className="info-list">
-                    <div className="info-row">
-                      <strong>Nom</strong>
-                      <span>{user?.org || 'Kivana'}</span>
-                    </div>
-
-                    <div className="info-row">
-                      <strong>Rôle</strong>
-                      <span>{user?.role || 'Agent de contrôle des billets'}</span>
-                    </div>
-                  </div>
-                </section>
-
-                <section className="account-section">
-                  <h3>🔐 Sécurité</h3>
-                  <div className="security-list">
-                    <div className="security-row">
-                      <span>🔐 Modifier le mot de passe</span>
-                      <button className="ghost-btn" onClick={() => setPage('compte-password')}>Changer</button>
-                    </div>
-
-                    <div className="security-row">
-                      <span>📱 Appareils connectés</span>
-                      <button className="ghost-btn" onClick={() => setPage('compte-devices')}>Gérer</button>
-                    </div>
-
-                    <div className="security-row">
-                      <span>🔔 Préférences de notifications</span>
-                      <button className="ghost-btn" onClick={() => setPage('compte-notif')}>Modifier</button>
-                    </div>
-                  </div>
-                </section>
-
-                <section className="account-section">
-                  <h3>🎨 Application</h3>
-                  <div className="info-list">
-                    <div className="info-row" style={{alignItems:'center'}}>
-                      <strong>Apparence</strong>
-                      <div style={{display:'flex', gap:8}}>
-                        <label style={{display:'flex', alignItems:'center', gap:6}}><input type="radio" name="theme" defaultChecked /> Clair</label>
-                        <label style={{display:'flex', alignItems:'center', gap:6}}><input type="radio" name="theme" /> Sombre</label>
-                        <button className="ghost-btn" style={{marginLeft:12}} onClick={() => setPage('compte-appearance')}>Gérer</button>
-                      </div>
-                    </div>
-
-                    <div className="info-row">
-                      <strong>À propos</strong>
-                      <div style={{textAlign:'right'}}>
-                        <div>Version 1.0.0</div>
-                        <div>Application Kivana Scanner</div>
-                        <button className="ghost-btn" style={{marginTop:8}} onClick={() => setPage('compte-about')}>En savoir plus</button>
+                    <div className="hero-info">
+                      <div className="hero-name">{user?.name || "Agent Kivana"}</div>
+                      <div className="hero-email">{user?.email || "agent@kivana.com"}</div>
+                      <div className="hero-badges">
+                        <span className="badge-active">Agent actif</span>
                       </div>
                     </div>
                   </div>
-                </section>
 
-                <div className="account-actions" style={{display:'flex', gap:8, marginTop:16}}>
-                  <button className="primary-btn" onClick={() => setPage('compte-edit')}>✏️ Modifier le profil</button>
-                  <button className="secondary-btn" onClick={() => setPage('compte-password')}>🔐 Changer le mot de passe</button>
-                  <button className="danger-btn" onClick={handleLogout}>⛔ Déconnexion</button>
+                  <div className="hero-meta">
+                    <div className="meta-item">
+                      <div className="meta-label">ID Agent</div>
+                      <div className="meta-value">{user?.id || "KIV-0001"}</div>
+                    </div>
+
+                    <div className="meta-divider" />
+
+                    <div className="meta-item">
+                      <div className="meta-label">Organisation</div>
+                      <div className="meta-value">{user?.org || "Kivana"}</div>
+                    </div>
+                  </div>
                 </div>
 
+                <div className="account-content">
+                  {/* Informations */}
+                  <div className="section-card">
+                    <div className="section-header"><span className="section-icon">👥</span> Informations</div>
+
+                    <div className="list-row" role="button" onClick={() => setPage("compte-edit")}>
+                      <div className="row-left"><span className="row-icon">👤</span> Nom de l'agent</div>
+                      <div className="row-right">{user?.name || "Agent Kivana"} <span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row">
+                      <div className="row-left"><span className="row-icon">🆔</span> ID Agent</div>
+                      <div className="row-right">{user?.id || "KIV-0001"} <span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row">
+                      <div className="row-left"><span className="row-icon">🏢</span> Organisation</div>
+                      <div className="row-right">{user?.org || "Kivana"} <span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row">
+                      <div className="row-left"><span className="row-icon">🧾</span> Rôle</div>
+                      <div className="row-right">{user?.role || "Agent de contrôle des billets"} <span className="chevron">›</span></div>
+                    </div>
+
+                  </div>
+
+                  {/* Sécurité */}
+                  <div className="section-card">
+                    <div className="section-header"><span className="section-icon">🔒</span> Sécurité</div>
+
+                    <div className="list-row" onClick={() => setPage("compte-password")}>
+                      <div className="row-left"><span className="row-icon">🔐</span> Modifier le mot de passe</div>
+                      <div className="row-right"><span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row" onClick={() => setPage("compte-devices")}>
+                      <div className="row-left"><span className="row-icon">📱</span> Appareils connectés</div>
+                      <div className="row-right"><span className="badge-pill">2</span> <span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row" onClick={() => setPage("compte-notif")}>
+                      <div className="row-left"><span className="row-icon">🔔</span> Préférences de notifications</div>
+                      <div className="row-right"><span className="chevron">›</span></div>
+                    </div>
+
+                  </div>
+
+                  {/* Préférences */}
+                  <div className="section-card">
+                    <div className="section-header"><span className="section-icon">⚙️</span> Préférences</div>
+
+                    <div className="list-row" onClick={() => setPage("compte-appearance")}>
+                      <div className="row-left"><span className="row-icon">🎨</span> Apparence</div>
+                      <div className="row-right">Thème clair <span className="chevron">›</span></div>
+                    </div>
+                  </div>
+
+                  {/* À propos */}
+                  <div className="section-card">
+                    <div className="section-header"><span className="section-icon">ℹ️</span> À propos</div>
+
+                    <div className="list-row">
+                      <div className="row-left"><span className="row-icon">📱</span> Application Kivana Scanner</div>
+                      <div className="row-right">Version 1.0.0 <span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row">
+                      <div className="row-left"><span className="row-icon">📄</span> Conditions d'utilisation</div>
+                      <div className="row-right"><span className="chevron">›</span></div>
+                    </div>
+
+                    <div className="list-row">
+                      <div className="row-left"><span className="row-icon">🔒</span> Politique de confidentialité</div>
+                      <div className="row-right"><span className="chevron">›</span></div>
+                    </div>
+
+                  </div>
+
+                  <div style={{height:14}} />
+
+                  <button className="logout-btn" onClick={handleLogout}>⎋ Déconnexion</button>
+                </div>
               </div>
             )}
 
-            {/* sous-pages compte */}
+            {/* sous-pages compte (laissées comme avant, styles améliorées via CSS) */}
             {page === 'compte-edit' && (
-              <div className="card">
+              <div className="card form-card">
                 <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
                 <h2 style={{marginTop:12}}>Modifier le profil</h2>
                 <form style={{marginTop:12}} onSubmit={(e) => { e.preventDefault(); alert('Profil mis à jour (simulation)'); setPage('compte') }}>
@@ -406,7 +422,7 @@ function App() {
             )}
 
             {page === 'compte-password' && (
-              <div className="card">
+              <div className="card form-card">
                 <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
                 <h2 style={{marginTop:12}}>Changer le mot de passe</h2>
                 <form style={{marginTop:12}} onSubmit={(e) => { e.preventDefault(); alert('Mot de passe changé (simulation)'); setPage('compte') }}>
@@ -425,7 +441,7 @@ function App() {
             )}
 
             {page === 'compte-devices' && (
-              <div className="card">
+              <div className="card form-card">
                 <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
                 <h2 style={{marginTop:12}}>Appareils connectés</h2>
                 <div style={{marginTop:12}}>
@@ -451,7 +467,7 @@ function App() {
             )}
 
             {page === 'compte-notif' && (
-              <div className="card">
+              <div className="card form-card">
                 <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
                 <h2 style={{marginTop:12}}>Préférences de notifications</h2>
                 <div style={{marginTop:12}}>
@@ -471,7 +487,7 @@ function App() {
             )}
 
             {page === 'compte-appearance' && (
-              <div className="card">
+              <div className="card form-card">
                 <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
                 <h2 style={{marginTop:12}}>Apparence</h2>
                 <div style={{marginTop:12}}>
@@ -485,7 +501,7 @@ function App() {
             )}
 
             {page === 'compte-about' && (
-              <div className="card">
+              <div className="card form-card">
                 <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
                 <h2 style={{marginTop:12}}>À propos</h2>
                 <div style={{marginTop:12}}>
