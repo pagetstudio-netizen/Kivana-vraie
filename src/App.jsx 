@@ -1,4 +1,4 @@
-import "./styles/compte.css"
+import "./styles/compte.css";
 import { useState } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
 import "./App.css"
