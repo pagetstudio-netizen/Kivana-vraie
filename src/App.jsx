@@ -276,6 +276,7 @@ function App() {
             )}
 
 
+            {/* === ONGLET COMPTE & SOUS-PAGES === */}
             {page === "compte" && (
               <div className="card account-card">
                 <div className="account-header" style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
@@ -294,7 +295,7 @@ function App() {
                   </div>
 
                   <div style={{textAlign:'right'}}>
-                    <button className="primary-btn" onClick={() => alert('Modifier le profil - fonctionnalité non implémentée')}>Modifier le profil</button>
+                    <button className="primary-btn" onClick={() => setPage('compte-edit')}>Modifier le profil</button>
                   </div>
                 </div>
 
@@ -340,17 +341,17 @@ function App() {
                   <div className="security-list">
                     <div className="security-row">
                       <span>🔐 Modifier le mot de passe</span>
-                      <button className="ghost-btn" onClick={() => alert('Changer le mot de passe - fonctionnalité non implémentée')}>Changer</button>
+                      <button className="ghost-btn" onClick={() => setPage('compte-password')}>Changer</button>
                     </div>
 
                     <div className="security-row">
                       <span>📱 Appareils connectés</span>
-                      <button className="ghost-btn" onClick={() => alert('Gestion des appareils - fonctionnalité non implémentée')}>Gérer</button>
+                      <button className="ghost-btn" onClick={() => setPage('compte-devices')}>Gérer</button>
                     </div>
 
                     <div className="security-row">
                       <span>🔔 Préférences de notifications</span>
-                      <button className="ghost-btn" onClick={() => alert('Préférences de notifications - fonctionnalité non implémentée')}>Modifier</button>
+                      <button className="ghost-btn" onClick={() => setPage('compte-notif')}>Modifier</button>
                     </div>
                   </div>
                 </section>
@@ -363,6 +364,7 @@ function App() {
                       <div style={{display:'flex', gap:8}}>
                         <label style={{display:'flex', alignItems:'center', gap:6}}><input type="radio" name="theme" defaultChecked /> Clair</label>
                         <label style={{display:'flex', alignItems:'center', gap:6}}><input type="radio" name="theme" /> Sombre</label>
+                        <button className="ghost-btn" style={{marginLeft:12}} onClick={() => setPage('compte-appearance')}>Gérer</button>
                       </div>
                     </div>
 
@@ -371,17 +373,126 @@ function App() {
                       <div style={{textAlign:'right'}}>
                         <div>Version 1.0.0</div>
                         <div>Application Kivana Scanner</div>
+                        <button className="ghost-btn" style={{marginTop:8}} onClick={() => setPage('compte-about')}>En savoir plus</button>
                       </div>
                     </div>
                   </div>
                 </section>
 
                 <div className="account-actions" style={{display:'flex', gap:8, marginTop:16}}>
-                  <button className="primary-btn" onClick={() => alert('Modifier le profil - fonctionnalité non implémentée')}>✏️ Modifier le profil</button>
-                  <button className="secondary-btn" onClick={() => alert('Changer le mot de passe - fonctionnalité non implémentée')}>🔐 Changer le mot de passe</button>
+                  <button className="primary-btn" onClick={() => setPage('compte-edit')}>✏️ Modifier le profil</button>
+                  <button className="secondary-btn" onClick={() => setPage('compte-password')}>🔐 Changer le mot de passe</button>
                   <button className="danger-btn" onClick={handleLogout}>⛔ Déconnexion</button>
                 </div>
 
+              </div>
+            )}
+
+            {/* sous-pages compte */}
+            {page === 'compte-edit' && (
+              <div className="card">
+                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
+                <h2 style={{marginTop:12}}>Modifier le profil</h2>
+                <form style={{marginTop:12}} onSubmit={(e) => { e.preventDefault(); alert('Profil mis à jour (simulation)'); setPage('compte') }}>
+                  <label style={{display:'block', marginTop:8}}>Nom</label>
+                  <input type="text" defaultValue={user?.name || ''} style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+
+                  <label style={{display:'block', marginTop:8}}>Email</label>
+                  <input type="email" defaultValue={user?.email || ''} style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+
+                  <button className="primary-btn" type="submit" style={{marginTop:12}}>Enregistrer</button>
+                </form>
+              </div>
+            )}
+
+            {page === 'compte-password' && (
+              <div className="card">
+                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
+                <h2 style={{marginTop:12}}>Changer le mot de passe</h2>
+                <form style={{marginTop:12}} onSubmit={(e) => { e.preventDefault(); alert('Mot de passe changé (simulation)'); setPage('compte') }}>
+                  <label style={{display:'block', marginTop:8}}>Mot de passe actuel</label>
+                  <input type="password" style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+
+                  <label style={{display:'block', marginTop:8}}>Nouveau mot de passe</label>
+                  <input type="password" style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+
+                  <label style={{display:'block', marginTop:8}}>Confirmer le nouveau mot de passe</label>
+                  <input type="password" style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+
+                  <button className="primary-btn" type="submit" style={{marginTop:12}}>Mettre à jour</button>
+                </form>
+              </div>
+            )}
+
+            {page === 'compte-devices' && (
+              <div className="card">
+                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
+                <h2 style={{marginTop:12}}>Appareils connectés</h2>
+                <div style={{marginTop:12}}>
+                  <div className="info-row" style={{marginBottom:8}}>
+                    <div>
+                      <div style={{fontWeight:600}}>Pixel 5</div>
+                      <div style={{fontSize:12, color:'#666'}}>Dernière connexion : 2026-07-20</div>
+                    </div>
+                    <button className="ghost-btn">Déconnecter</button>
+                  </div>
+
+                  <div className="info-row" style={{marginBottom:8}}>
+                    <div>
+                      <div style={{fontWeight:600}}>iPhone 12</div>
+                      <div style={{fontSize:12, color:'#666'}}>Dernière connexion : 2026-07-27</div>
+                    </div>
+                    <button className="ghost-btn">Déconnecter</button>
+                  </div>
+
+                  <p style={{color:'#666', marginTop:8}}>Gérez vos sessions actives et déconnectez des appareils si nécessaire.</p>
+                </div>
+              </div>
+            )}
+
+            {page === 'compte-notif' && (
+              <div className="card">
+                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
+                <h2 style={{marginTop:12}}>Préférences de notifications</h2>
+                <div style={{marginTop:12}}>
+                  <label style={{display:'flex', justifyContent:'space-between', alignItems:'center', background:'#fafbff', padding:10, borderRadius:8, marginBottom:8}}>
+                    <span>Notifications push</span>
+                    <input type="checkbox" defaultChecked />
+                  </label>
+
+                  <label style={{display:'flex', justifyContent:'space-between', alignItems:'center', background:'#fafbff', padding:10, borderRadius:8, marginBottom:8}}>
+                    <span>Notifications par e-mail</span>
+                    <input type="checkbox" />
+                  </label>
+
+                  <button className="primary-btn" style={{marginTop:8}} onClick={() => { alert('Préférences sauvegardées (simulation)'); setPage('compte') }}>Sauvegarder</button>
+                </div>
+              </div>
+            )}
+
+            {page === 'compte-appearance' && (
+              <div className="card">
+                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
+                <h2 style={{marginTop:12}}>Apparence</h2>
+                <div style={{marginTop:12}}>
+                  <label style={{display:'flex', alignItems:'center', gap:8}}><input type="radio" name="theme_manage" defaultChecked /> Clair</label>
+                  <label style={{display:'flex', alignItems:'center', gap:8, marginTop:8}}><input type="radio" name="theme_manage" /> Sombre</label>
+
+                  <p style={{color:'#666', marginTop:12}}>Changer le thème ici modifiera uniquement l'interface. (Simulation)</p>
+                  <button className="primary-btn" style={{marginTop:8}} onClick={() => { alert('Thème appliqué (simulation)'); setPage('compte') }}>Appliquer</button>
+                </div>
+              </div>
+            )}
+
+            {page === 'compte-about' && (
+              <div className="card">
+                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
+                <h2 style={{marginTop:12}}>À propos</h2>
+                <div style={{marginTop:12}}>
+                  <p style={{margin:0}}>Kivana Scanner</p>
+                  <p style={{margin:0}}>Version 1.0.0</p>
+                  <p style={{color:'#666', marginTop:8}}>Application mobile PWA pour le contrôle des billets.</p>
+                </div>
               </div>
             )}
 
