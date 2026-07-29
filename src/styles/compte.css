@@ -29,8 +29,10 @@
 .acc-header {
   background: linear-gradient(155deg, #1565FF 0%, #0A84FF 100%);
   padding: 52px 20px 0;
-  position: relative;
-  overflow: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  overflow: clip; /* clips the deco circles without creating a scroll container */
 }
 
 /* Decorative glow circles */

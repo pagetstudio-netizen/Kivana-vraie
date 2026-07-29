@@ -137,27 +137,36 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 75px;
+  height: 70px;
   background: white;
   display: flex;
   justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+  align-items: stretch;
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.08), 0 -4px 16px rgba(0,0,0,0.06);
+  z-index: 999;
+  /* safe-area pour iOS avec barre d'accueil */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: content-box;
 }
 
 .bottom-nav button {
   border: none;
   background: none;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
+  gap: 4px;
   color: #94a3b8;
-  font-size: 11px;
-  padding: 4px 12px;
+  padding: 0;
+  margin: 0;
   cursor: pointer;
   transition: color 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+  /* taille fixe pour éviter tout décalage */
+  min-width: 0;
+  height: 70px;
 }
 
 .bottom-nav button.nav-active {
@@ -167,6 +176,8 @@ body {
 .bottom-nav button span {
   font-size: 10px;
   font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 
