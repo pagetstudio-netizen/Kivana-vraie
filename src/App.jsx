@@ -1,12 +1,51 @@
 import "./styles/compte.css"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
+import { LocalNotifications } from "@capacitor/local-notifications"
 import "./App.css"
-
+import {
+  FiBell,
+  FiUser,
+  FiCreditCard,
+  FiBriefcase,
+  FiShield,
+  FiLock,
+  FiSmartphone,
+  FiSettings,
+  FiMoon,
+  FiInfo,
+  FiFileText,
+  FiChevronRight,
+  FiLogOut,
+  FiEdit3
+} from "react-icons/fi"
 function App() {
   const [page, setPage] = useState("accueil")
   const [result, setResult] = useState("")
 
+  useEffect(() => {
+  const initialiserNotifications = async () => {
+    try {
+      const permission = await LocalNotifications.checkPermissions()
+
+      if (permission.display !== "granted") {
+        const demande = await LocalNotifications.requestPermissions()
+
+        if (demande.display === "granted") {
+          console.log("Notifications autorisées ✅")
+        } else {
+          console.log("Permission de notification refusée ❌")
+        }
+      } else {
+        console.log("Notifications déjà autorisées ✅")
+      }
+    } catch (error) {
+      console.error("Erreur permissions notifications :", error)
+    }
+  }
+
+  initialiserNotifications()
+}, [])
   // Auth state: utilisateur courant (préparé pour supabase ultérieurement)
   const [user, setUser] = useState(() => {
     try {
@@ -49,49 +88,78 @@ function App() {
       )
     }, 100)
   }
+const envoyerNotification = async (title, body) => {
+  try {
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          title,
+          body,
+          id: Date.now(),
+          schedule: {
+            at: new Date(Date.now() + 500)
+          }
+        }
+      ]
+    })
+  } catch (error) {
+    console.error("Erreur notification :", error)
+  }
+}
+const handleLogin = (e) => {
+  e.preventDefault()
+  setLoginError("")
 
-  const handleLogin = (e) => {
-    e.preventDefault()
-    setLoginError("")
+  let u = null
 
-    // Comptes de test temporaires (base de données fictive)
-    if (loginEmail === "agent@kivana.com" && loginPassword === "Kivana2026") {
-      const u = {
-        name: "Agent Kivana",
-        email: "agent@kivana.com",
-        id: "KIV-0001",
-        org: "Kivana",
-        role: "Agent de contrôle des billets"
-      }
-      setUser(u)
-      localStorage.setItem("kivana_user", JSON.stringify(u))
-      setPage("accueil")
-      setLoginEmail("")
-      setLoginPassword("")
-      setLoginError("")
-      return
+  // Compte Agent
+  if (
+    loginEmail === "agent@kivana.com" &&
+    loginPassword === "Kivana2026"
+  ) {
+    u = {
+      name: "Agent Kivana",
+      email: "agent@kivana.com",
+      id: "KIV-0001",
+      org: "Kivana",
+      role: "Agent de contrôle des billets"
     }
-
-    if (loginEmail === "pagetstudio@gmail.com" && loginPassword === "AAbb11##") {
-      const u = {
-        name: "Paget Studio",
-        email: "pagetstudio@gmail.com",
-        id: "KIV-ADMIN-0001",
-        org: "Kivana",
-        role: "Administrateur"
-      }
-      setUser(u)
-      localStorage.setItem("kivana_user", JSON.stringify(u))
-      setPage("accueil")
-      setLoginEmail("")
-      setLoginPassword("")
-      setLoginError("")
-      return
-    }
-
-    setLoginError("Email ou mot de passe incorrect")
   }
 
+  // Compte Administrateur
+  if (
+    loginEmail === "pagetstudio@gmail.com" &&
+    loginPassword === "AAbb11##"
+  ) {
+    u = {
+      name: "Paget Studio",
+      email: "pagetstudio@gmail.com",
+      id: "KIV-ADMIN-0001",
+      org: "Kivana",
+      role: "Administrateur"
+    }
+  }
+
+  // Connexion réussie
+  if (u) {
+    setUser(u)
+    localStorage.setItem("kivana_user", JSON.stringify(u))
+
+    envoyerNotification(
+      "Bienvenue sur Kivana 👋",
+      "Connexion réussie. Bonne utilisation de Kivana !"
+    )
+
+    setPage("accueil")
+    setLoginEmail("")
+    setLoginPassword("")
+    setLoginError("")
+    return
+  }
+
+  // Connexion incorrecte
+  setLoginError("Email ou mot de passe incorrect")
+}
   const handleLogout = () => {
     localStorage.removeItem("kivana_user")
     setUser(null)
@@ -279,245 +347,380 @@ function App() {
 
             {/* === ONGLET COMPTE & SOUS-PAGES === */}
             {page === "compte" && (
-              <div className="account-screen">
-                <div className="account-hero">
-                  <div className="account-top">
-                    <div className="account-title">Compte</div>
-                    <button
-                      className="hero-notif"
-                      aria-label="Notifications"
-                      onClick={() => setPage("notifications")}
-                    >
-                      🔔
-                    </button>
-                  </div>
+  <div className="account-screen">
 
-                  <div className="account-hero-content">
-                    <div className="hero-avatar" aria-hidden>👤</div>
+    <div className="account-header">
+      <div>
+        <span className="account-eyebrow">ESPACE PERSONNEL</span>
+        <h2>Mon compte</h2>
+        <p>Gérez votre profil et vos préférences</p>
+      </div>
 
-                    <div className="hero-info">
-                      <div className="hero-name">{user?.name || "Agent Kivana"}</div>
-                      <div className="hero-email">{user?.email || "agent@kivana.com"}</div>
-                      <div className="hero-badges">
-                        <span className="badge-active">Agent actif</span>
-                      </div>
-                    </div>
-                  </div>
+      <button
+        className="account-notification-btn"
+        aria-label="Notifications"
+        onClick={() => setPage("notifications")}
+      >
+        <FiBell size={21} />
+        <span className="notification-dot" />
+      </button>
+    </div>
 
-                  <div className="hero-meta">
-                    <div className="meta-item">
-                      <div className="meta-label">ID Agent</div>
-                      <div className="meta-value">{user?.id || "KIV-0001"}</div>
-                    </div>
+    {/* PROFIL */}
+    <div className="profile-card">
+      <div className="profile-card-glow" />
 
-                    <div className="meta-divider" />
+      <div className="profile-main">
 
-                    <div className="meta-item">
-                      <div className="meta-label">Organisation</div>
-                      <div className="meta-value">{user?.org || "Kivana"}</div>
-                    </div>
-                  </div>
-                </div>
+        <div className="profile-avatar">
+          <FiUser size={30} />
+        </div>
 
-                <div className="account-content">
-                  {/* Informations */}
-                  <div className="section-card">
-                    <div className="section-header"><span className="section-icon">👥</span> Informations</div>
+        <div className="profile-info">
+          <div className="profile-name">
+            {user?.name || "Agent Kivana"}
+          </div>
 
-                    <div className="list-row" role="button" onClick={() => setPage("compte-edit")}>
-                      <div className="row-left"><span className="row-icon">👤</span> Nom de l'agent</div>
-                      <div className="row-right">{user?.name || "Agent Kivana"} <span className="chevron">›</span></div>
-                    </div>
+          <div className="profile-email">
+            {user?.email || "agent@kivana.com"}
+          </div>
 
-                    <div className="list-row">
-                      <div className="row-left"><span className="row-icon">🆔</span> ID Agent</div>
-                      <div className="row-right">{user?.id || "KIV-0001"} <span className="chevron">›</span></div>
-                    </div>
+          <div className="profile-status">
+            <span className="status-indicator" />
+            Compte actif
+          </div>
+        </div>
 
-                    <div className="list-row">
-                      <div className="row-left"><span className="row-icon">🏢</span> Organisation</div>
-                      <div className="row-right">{user?.org || "Kivana"} <span className="chevron">›</span></div>
-                    </div>
+        <button
+          className="profile-edit-btn"
+          onClick={() => setPage("compte-edit")}
+          aria-label="Modifier le profil"
+        >
+          <FiEdit3 size={17} />
+        </button>
 
-                    <div className="list-row">
-                      <div className="row-left"><span className="row-icon">🧾</span> Rôle</div>
-                      <div className="row-right">{user?.role || "Agent de contrôle des billets"} <span className="chevron">›</span></div>
-                    </div>
+      </div>
 
-                  </div>
+      <div className="profile-divider" />
 
-                  {/* Sécurité */}
-                  <div className="section-card">
-                    <div className="section-header"><span className="section-icon">🔒</span> Sécurité</div>
+      <div className="profile-meta">
 
-                    <div className="list-row" onClick={() => setPage("compte-password")}>
-                      <div className="row-left"><span className="row-icon">🔐</span> Modifier le mot de passe</div>
-                      <div className="row-right"><span className="chevron">›</span></div>
-                    </div>
+        <div className="profile-meta-item">
+          <span>ID AGENT</span>
+          <strong>{user?.id || "KIV-0001"}</strong>
+        </div>
 
-                    <div className="list-row" onClick={() => setPage("compte-devices")}>
-                      <div className="row-left"><span className="row-icon">📱</span> Appareils connectés</div>
-                      <div className="row-right"><span className="badge-pill">2</span> <span className="chevron">›</span></div>
-                    </div>
+        <div className="profile-meta-separator" />
 
-                    <div className="list-row" onClick={() => setPage("compte-notif")}>
-                      <div className="row-left"><span className="row-icon">🔔</span> Préférences de notifications</div>
-                      <div className="row-right"><span className="chevron">›</span></div>
-                    </div>
+        <div className="profile-meta-item">
+          <span>ORGANISATION</span>
+          <strong>{user?.org || "Kivana"}</strong>
+        </div>
 
-                  </div>
+      </div>
+    </div>
 
-                  {/* Préférences */}
-                  <div className="section-card">
-                    <div className="section-header"><span className="section-icon">⚙️</span> Préférences</div>
+    {/* INFORMATIONS */}
+    <div className="account-section">
+      <div className="account-section-title">
+        <span className="section-title-icon blue">
+          <FiUser size={17} />
+        </span>
+        <span>Informations</span>
+      </div>
 
-                    <div className="list-row" onClick={() => setPage("compte-appearance")}>
-                      <div className="row-left"><span className="row-icon">🎨</span> Apparence</div>
-                      <div className="row-right">Thème clair <span className="chevron">›</span></div>
-                    </div>
-                  </div>
+      <div className="account-list">
 
-                  {/* À propos */}
-                  <div className="section-card">
-                    <div className="section-header"><span className="section-icon">ℹ️</span> À propos</div>
+        <div
+          className="account-row"
+          onClick={() => setPage("compte-edit")}
+        >
+          <div className="row-icon blue">
+            <FiUser />
+          </div>
 
-                    <div className="list-row">
-                      <div className="row-left"><span className="row-icon">📱</span> Application Kivana Scanner</div>
-                      <div className="row-right">Version 1.0.0 <span className="chevron">›</span></div>
-                    </div>
+          <div className="row-content">
+            <strong>Nom de l'agent</strong>
+            <span>{user?.name || "Agent Kivana"}</span>
+          </div>
 
-                    <div className="list-row">
-                      <div className="row-left"><span className="row-icon">📄</span> Conditions d'utilisation</div>
-                      <div className="row-right"><span className="chevron">›</span></div>
-                    </div>
+          <FiChevronRight className="row-chevron" />
+        </div>
 
-                    <div className="list-row">
-                      <div className="row-left"><span className="row-icon">🔒</span> Politique de confidentialité</div>
-                      <div className="row-right"><span className="chevron">›</span></div>
-                    </div>
+        <div className="account-row">
+          <div className="row-icon purple">
+            <FiCreditCard />
+          </div>
 
-                  </div>
+          <div className="row-content">
+            <strong>ID Agent</strong>
+            <span>{user?.id || "KIV-0001"}</span>
+          </div>
 
-                  <div style={{height:14}} />
+          <FiChevronRight className="row-chevron" />
+        </div>
 
-                  <button className="logout-btn" onClick={handleLogout}>⎋ Déconnexion</button>
-                </div>
-              </div>
-            )}
+        <div className="account-row">
+          <div className="row-icon green">
+            <FiBriefcase />
+          </div>
 
-            {/* sous-pages compte (laissées comme avant, styles améliorées via CSS) */}
+          <div className="row-content">
+            <strong>Organisation</strong>
+            <span>{user?.org || "Kivana"}</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+        <div className="account-row">
+          <div className="row-icon orange">
+            <FiShield />
+          </div>
+
+          <div className="row-content">
+            <strong>Rôle</strong>
+            <span>{user?.role || "Agent de contrôle des billets"}</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+      </div>
+    </div>
+
+    {/* SÉCURITÉ */}
+    <div className="account-section">
+      <div className="account-section-title">
+        <span className="section-title-icon green">
+          <FiShield size={17} />
+        </span>
+        <span>Sécurité</span>
+      </div>
+
+      <div className="account-list">
+
+        <div
+          className="account-row"
+          onClick={() => setPage("compte-password")}
+        >
+          <div className="row-icon red">
+            <FiLock />
+          </div>
+
+          <div className="row-content">
+            <strong>Mot de passe</strong>
+            <span>Modifier votre mot de passe</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+        <div
+          className="account-row"
+          onClick={() => setPage("compte-devices")}
+        >
+          <div className="row-icon blue">
+            <FiSmartphone />
+          </div>
+
+          <div className="row-content">
+            <strong>Appareils connectés</strong>
+            <span>Gérer vos appareils</span>
+          </div>
+
+          <div className="row-end">
+            <span className="count-badge">2</span>
+            <FiChevronRight className="row-chevron" />
+          </div>
+        </div>
+
+        <div
+          className="account-row"
+          onClick={() => setPage("compte-notif")}
+        >
+          <div className="row-icon yellow">
+            <FiBell />
+          </div>
+
+          <div className="row-content">
+            <strong>Notifications</strong>
+            <span>Gérer vos préférences</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+      </div>
+    </div>
+
+    {/* PRÉFÉRENCES */}
+    <div className="account-section">
+      <div className="account-section-title">
+        <span className="section-title-icon purple">
+          <FiSettings size={17} />
+        </span>
+        <span>Préférences</span>
+      </div>
+
+      <div className="account-list">
+
+        <div
+          className="account-row"
+          onClick={() => setPage("compte-appearance")}
+        >
+          <div className="row-icon purple">
+            <FiMoon />
+          </div>
+
+          <div className="row-content">
+            <strong>Apparence</strong>
+            <span>Thème clair</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+      </div>
+    </div>
+
+    {/* À PROPOS */}
+    <div className="account-section">
+      <div className="account-section-title">
+        <span className="section-title-icon gray">
+          <FiInfo size={17} />
+        </span>
+        <span>À propos</span>
+      </div>
+
+      <div className="account-list">
+
+        <div
+          className="account-row"
+          onClick={() => setPage("compte-about")}
+        >
+          <div className="row-icon blue">
+            <FiSmartphone />
+          </div>
+
+          <div className="row-content">
+            <strong>Kivana Scanner</strong>
+            <span>Version 1.0.0</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+        <div className="account-row">
+          <div className="row-icon gray">
+            <FiFileText />
+          </div>
+
+          <div className="row-content">
+            <strong>Conditions d'utilisation</strong>
+            <span>Consulter les conditions</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+        <div className="account-row">
+          <div className="row-icon gray">
+            <FiLock />
+          </div>
+
+          <div className="row-content">
+            <strong>Confidentialité</strong>
+            <span>Politique de confidentialité</span>
+          </div>
+
+          <FiChevronRight className="row-chevron" />
+        </div>
+
+      </div>
+    </div>
+
+    {/* DÉCONNEXION */}
+    <button
+      className="account-logout"
+      onClick={handleLogout}
+    >
+      <FiLogOut size={19} />
+      <span>Se déconnecter</span>
+    </button>
+
+    <div className="account-footer">
+      <span>KIVANA SCANNER</span>
+      <span>•</span>
+      <span>v1.0.0</span>
+    </div>
+
+  </div>
+)}
+                            {/* sous-pages compte (laissées comme avant, styles améliorées via CSS) */}
             {page === 'compte-edit' && (
-              <div className="card form-card">
-                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
-                <h2 style={{marginTop:12}}>Modifier le profil</h2>
-                <form style={{marginTop:12}} onSubmit={(e) => { e.preventDefault(); alert('Profil mis à jour (simulation)'); setPage('compte') }}>
-                  <label style={{display:'block', marginTop:8}}>Nom</label>
-                  <input type="text" defaultValue={user?.name || ''} style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+  <div className="card form-card">
+    <button
+      className="ghost-btn"
+      onClick={() => setPage('compte')}
+    >
+      ← Retour
+    </button>
 
-                  <label style={{display:'block', marginTop:8}}>Email</label>
-                  <input type="email" defaultValue={user?.email || ''} style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+    <h2 style={{marginTop: 12}}>Modifier le profil</h2>
 
-                  <button className="primary-btn" type="submit" style={{marginTop:12}}>Enregistrer</button>
-                </form>
-              </div>
-            )}
+    <form
+      style={{marginTop: 12}}
+      onSubmit={(e) => {
+        e.preventDefault()
+        alert('Profil mis à jour (simulation)')
+        setPage('compte')
+      }}
+    >
+      <label style={{display: 'block', marginTop: 8}}>
+        Nom
+      </label>
 
-            {page === 'compte-password' && (
-              <div className="card form-card">
-                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
-                <h2 style={{marginTop:12}}>Changer le mot de passe</h2>
-                <form style={{marginTop:12}} onSubmit={(e) => { e.preventDefault(); alert('Mot de passe changé (simulation)'); setPage('compte') }}>
-                  <label style={{display:'block', marginTop:8}}>Mot de passe actuel</label>
-                  <input type="password" style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+      <input
+        type="text"
+        defaultValue={user?.name || ''}
+        style={{
+          width: '100%',
+          padding: 10,
+          borderRadius: 8,
+          border: '1px solid #e6e6e6'
+        }}
+      />
 
-                  <label style={{display:'block', marginTop:8}}>Nouveau mot de passe</label>
-                  <input type="password" style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+      <label style={{display: 'block', marginTop: 8}}>
+        Email
+      </label>
 
-                  <label style={{display:'block', marginTop:8}}>Confirmer le nouveau mot de passe</label>
-                  <input type="password" style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #e6e6e6'}} />
+      <input
+        type="email"
+        defaultValue={user?.email || ''}
+        style={{
+          width: '100%',
+          padding: 10,
+          borderRadius: 8,
+          border: '1px solid #e6e6e6'
+        }}
+      />
 
-                  <button className="primary-btn" type="submit" style={{marginTop:12}}>Mettre à jour</button>
-                </form>
-              </div>
-            )}
-
-            {page === 'compte-devices' && (
-              <div className="card form-card">
-                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
-                <h2 style={{marginTop:12}}>Appareils connectés</h2>
-                <div style={{marginTop:12}}>
-                  <div className="info-row" style={{marginBottom:8}}>
-                    <div>
-                      <div style={{fontWeight:600}}>Pixel 5</div>
-                      <div style={{fontSize:12, color:'#666'}}>Dernière connexion : 2026-07-20</div>
-                    </div>
-                    <button className="ghost-btn">Déconnecter</button>
-                  </div>
-
-                  <div className="info-row" style={{marginBottom:8}}>
-                    <div>
-                      <div style={{fontWeight:600}}>iPhone 12</div>
-                      <div style={{fontSize:12, color:'#666'}}>Dernière connexion : 2026-07-27</div>
-                    </div>
-                    <button className="ghost-btn">Déconnecter</button>
-                  </div>
-
-                  <p style={{color:'#666', marginTop:8}}>Gérez vos sessions actives et déconnectez des appareils si nécessaire.</p>
-                </div>
-              </div>
-            )}
-
-            {page === 'compte-notif' && (
-              <div className="card form-card">
-                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
-                <h2 style={{marginTop:12}}>Préférences de notifications</h2>
-                <div style={{marginTop:12}}>
-                  <label style={{display:'flex', justifyContent:'space-between', alignItems:'center', background:'#fafbff', padding:10, borderRadius:8, marginBottom:8}}>
-                    <span>Notifications push</span>
-                    <input type="checkbox" defaultChecked />
-                  </label>
-
-                  <label style={{display:'flex', justifyContent:'space-between', alignItems:'center', background:'#fafbff', padding:10, borderRadius:8, marginBottom:8}}>
-                    <span>Notifications par e-mail</span>
-                    <input type="checkbox" />
-                  </label>
-
-                  <button className="primary-btn" style={{marginTop:8}} onClick={() => { alert('Préférences sauvegardées (simulation)'); setPage('compte') }}>Sauvegarder</button>
-                </div>
-              </div>
-            )}
-
-            {page === 'compte-appearance' && (
-              <div className="card form-card">
-                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
-                <h2 style={{marginTop:12}}>Apparence</h2>
-                <div style={{marginTop:12}}>
-                  <label style={{display:'flex', alignItems:'center', gap:8}}><input type="radio" name="theme_manage" defaultChecked /> Clair</label>
-                  <label style={{display:'flex', alignItems:'center', gap:8, marginTop:8}}><input type="radio" name="theme_manage" /> Sombre</label>
-
-                  <p style={{color:'#666', marginTop:12}}>Changer le thème ici modifiera uniquement l'interface. (Simulation)</p>
-                  <button className="primary-btn" style={{marginTop:8}} onClick={() => { alert('Thème appliqué (simulation)'); setPage('compte') }}>Appliquer</button>
-                </div>
-              </div>
-            )}
-
-            {page === 'compte-about' && (
-              <div className="card form-card">
-                <button className="ghost-btn" onClick={() => setPage('compte')}>← Retour</button>
-                <h2 style={{marginTop:12}}>À propos</h2>
-                <div style={{marginTop:12}}>
-                  <p style={{margin:0}}>Kivana Scanner</p>
-                  <p style={{margin:0}}>Version 1.0.0</p>
-                  <p style={{color:'#666', marginTop:8}}>Application mobile PWA pour le contrôle des billets.</p>
-                </div>
-              </div>
-            )}
+      <button
+        className="primary-btn"
+        type="submit"
+        style={{marginTop: 12}}
+      >
+        Enregistrer
+      </button>
+    </form>
+  </div>
+)}
 
           </>
         )}
-
       </main>
-
 
       {/* Navigation visible uniquement si connecté */}
       {user && (
