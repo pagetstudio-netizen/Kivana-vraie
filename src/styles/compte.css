@@ -1,456 +1,753 @@
 /* =====================================================
-   KIVANA SCANNER — COMPTE PREMIUM
+   KIVANA SCANNER — COMPTE iOS PREMIUM
+   ===================================================== */
+
+/* ── Hide fixed header on compte pages ── */
+.on-compte .fixed-header {
+  display: none;
+}
+
+/* ── Remove content padding on compte pages ── */
+.on-compte .content {
+  padding: 0 !important;
+}
+
+/* =====================================================
+   ACCOUNT SCREEN
    ===================================================== */
 
 .account-screen {
-  min-height: 100%;
-  padding: 18px 16px 110px;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.10), transparent 32%),
-    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-  color: #111827;
+  min-height: 100vh;
+  background: #f2f2f7;
+  padding-bottom: 90px;
 }
 
-/* ================= HEADER ================= */
+/* =====================================================
+   BLUE HEADER
+   ===================================================== */
 
-.account-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.account-eyebrow {
-  display: block;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #10b981;
-  margin-bottom: 5px;
-}
-
-.account-header h2 {
-  margin: 0;
-  font-size: 29px;
-  font-weight: 800;
-  letter-spacing: -0.8px;
-  color: #0f172a;
-}
-
-.account-header p {
-  margin: 5px 0 0;
-  font-size: 13px;
-  color: #64748b;
-}
-
-.account-notification-btn {
+.acc-header {
+  background: linear-gradient(155deg, #1565FF 0%, #0A84FF 100%);
+  padding: 52px 20px 0;
   position: relative;
-  width: 46px;
-  height: 46px;
-  border: 1px solid rgba(255,255,255,.8);
-  border-radius: 15px;
-  background: rgba(255,255,255,.82);
-  color: #0f172a;
+  overflow: hidden;
+}
+
+/* Decorative glow circles */
+.acc-header::before {
+  content: '';
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  right: -70px;
+  top: -90px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+.acc-header::after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  left: -30px;
+  bottom: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+
+/* Top bar: title + bell */
+.acc-header-topbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    0 8px 25px rgba(15,23,42,.08),
-    inset 0 1px 0 rgba(255,255,255,.9);
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.account-notification-btn:active {
-  transform: scale(.94);
-}
-
-.notification-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ef4444;
-  border: 2px solid white;
-}
-
-/* ================= PROFILE ================= */
-
-.profile-card {
   position: relative;
-  overflow: hidden;
-  padding: 20px;
-  border-radius: 24px;
-  background:
-    linear-gradient(135deg, #0f766e 0%, #10b981 100%);
+  margin-bottom: 26px;
+}
+
+.acc-header-title {
+  font-size: 17px;
+  font-weight: 700;
   color: white;
-  box-shadow:
-    0 18px 45px rgba(15,118,110,.25);
+  letter-spacing: 0.2px;
+}
+
+.acc-bell-btn {
+  position: absolute;
+  right: 0;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acc-bell-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #ff3b30;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #1565FF;
+  line-height: 1;
+}
+
+/* Avatar + name row */
+.acc-profile-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 0 2px;
   margin-bottom: 22px;
 }
 
-.profile-card-glow {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  right: -70px;
-  top: -80px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.13);
-}
-
-.profile-main {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-}
-
-.profile-avatar {
-  width: 62px;
-  height: 62px;
+.acc-avatar {
+  width: 80px;
+  height: 80px;
   flex-shrink: 0;
-  border-radius: 20px;
-  background: rgba(255,255,255,.18);
-  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 3px solid rgba(255,255,255,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
 }
 
-.profile-info {
-  min-width: 0;
+.acc-profile-info {
   flex: 1;
+  min-width: 0;
+  padding-top: 6px;
 }
 
-.profile-name {
-  font-size: 18px;
+.acc-profile-name {
+  font-size: 22px;
   font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: white;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
 }
 
-.profile-email {
-  margin-top: 3px;
-  font-size: 12px;
-  opacity: .82;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.acc-profile-email {
+  font-size: 13px;
+  color: rgba(255,255,255,0.72);
+  margin-top: 4px;
 }
 
-.profile-status {
+.acc-active-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
-  padding: 5px 9px;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 5px 13px;
   border-radius: 20px;
-  background: rgba(255,255,255,.14);
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
 }
 
-.status-indicator {
+.acc-active-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #bbf7d0;
-  box-shadow: 0 0 0 3px rgba(187,247,208,.15);
+  background: #34c759;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(52,199,89,0.4);
 }
 
-.profile-edit-btn {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 13px;
-  background: rgba(255,255,255,.16);
+/* Meta bar: ID Agent | Organisation */
+.acc-meta-bar {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(255,255,255,0.13);
+  border-radius: 16px 16px 0 0;
+  margin: 0 -0px;
+}
+
+.acc-meta-item {
+  flex: 1;
+  text-align: center;
+}
+
+.acc-meta-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+.acc-meta-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.acc-meta-divider {
+  width: 1px;
+  height: 34px;
+  background: rgba(255,255,255,0.22);
+  margin: 0 8px;
+}
+
+/* =====================================================
+   WHITE BODY
+   ===================================================== */
+
+.acc-body {
+  background: #f2f2f7;
+  padding: 20px 16px 16px;
+}
+
+/* =====================================================
+   SECTIONS
+   ===================================================== */
+
+.acc-section {
+  margin-bottom: 22px;
+}
+
+.acc-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+  margin-bottom: 9px;
+}
+
+.acc-section-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1565FF;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  flex-shrink: 0;
 }
 
-.profile-divider {
-  height: 1px;
-  margin: 20px 0 16px;
-  background: rgba(255,255,255,.18);
-}
-
-.profile-meta {
-  display: flex;
-  align-items: center;
-}
-
-.profile-meta-item {
-  flex: 1;
-}
-
-.profile-meta-item span {
-  display: block;
-  font-size: 9px;
+.acc-section-label {
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: .8px;
-  opacity: .65;
+  color: #1c1c1e;
 }
 
-.profile-meta-item strong {
-  display: block;
-  margin-top: 4px;
-  font-size: 12px;
-}
+/* =====================================================
+   CARDS
+   ===================================================== */
 
-.profile-meta-separator {
-  width: 1px;
-  height: 30px;
-  margin: 0 16px;
-  background: rgba(255,255,255,.18);
-}
-
-/* ================= SECTIONS ================= */
-
-.account-section {
-  margin-bottom: 19px;
-}
-
-.account-section-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 0 4px 10px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #334155;
-}
-
-.section-title-icon {
-  width: 29px;
-  height: 29px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.section-title-icon.blue {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.section-title-icon.green {
-  background: #d1fae5;
-  color: #059669;
-}
-
-.section-title-icon.purple {
-  background: #ede9fe;
-  color: #7c3aed;
-}
-
-.section-title-icon.gray {
-  background: #e2e8f0;
-  color: #475569;
-}
-
-.account-list {
+.acc-card {
+  background: white;
+  border-radius: 16px;
   overflow: hidden;
-  border-radius: 19px;
-  background: rgba(255,255,255,.92);
-  border: 1px solid rgba(226,232,240,.9);
-  box-shadow: 0 7px 25px rgba(15,23,42,.055);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.055);
 }
 
-/* ================= ROW ================= */
+/* =====================================================
+   ROWS
+   ===================================================== */
 
-.account-row {
-  min-height: 70px;
+.acc-row {
+  min-height: 52px;
   padding: 11px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: background .18s ease;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.account-row + .account-row {
-  border-top: 1px solid #f1f5f9;
+.acc-row:active {
+  background: #f2f2f7;
 }
 
-.account-row:active {
-  background: #f8fafc;
+.acc-row-sep {
+  height: 1px;
+  background: #f2f2f7;
+  margin: 0 14px;
 }
 
-.row-icon {
-  width: 42px;
-  height: 42px;
+.acc-row-ico {
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
-  border-radius: 13px;
+  border-radius: 8px;
+  background: #f2f2f7;
+  color: #3c3c43;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.row-icon.blue {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.row-icon.purple {
-  background: #f5f3ff;
-  color: #7c3aed;
-}
-
-.row-icon.green {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-.row-icon.orange {
-  background: #fff7ed;
-  color: #ea580c;
-}
-
-.row-icon.red {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.row-icon.yellow {
-  background: #fefce8;
-  color: #ca8a04;
-}
-
-.row-icon.gray {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.row-content {
-  min-width: 0;
+.acc-row-label {
   flex: 1;
+  font-size: 15px;
+  font-weight: 450;
+  color: #1c1c1e;
+  min-width: 0;
 }
 
-.row-content strong {
-  display: block;
-  font-size: 13px;
-  font-weight: 750;
-  color: #1e293b;
-}
-
-.row-content span {
-  display: block;
-  margin-top: 3px;
-  font-size: 11px;
-  color: #94a3b8;
+.acc-row-val {
+  font-size: 14px;
+  color: #8e8e93;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.row-chevron {
+  max-width: 140px;
   flex-shrink: 0;
-  color: #cbd5e1;
-  width: 18px;
-  height: 18px;
+  text-align: right;
 }
 
-.row-end {
-  display: flex;
-  align-items: center;
-  gap: 7px;
+.acc-val-sm {
+  font-size: 12px;
+  max-width: 115px;
 }
 
-.count-badge {
-  min-width: 24px;
-  height: 24px;
-  padding: 0 7px;
-  border-radius: 8px;
-  background: #ecfdf5;
-  color: #059669;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 800;
+.acc-row-chevron {
+  flex-shrink: 0;
+  color: #c7c7cc;
+  width: 16px;
+  height: 16px;
 }
 
-/* ================= LOGOUT ================= */
-
-.account-logout {
-  width: 100%;
-  min-height: 52px;
-  margin-top: 8px;
-  border: 1px solid #fee2e2;
-  border-radius: 16px;
-  background: #fff;
-  color: #dc2626;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(220,38,38,.05);
-  transition: .2s ease;
-}
-
-.account-logout:active {
-  transform: scale(.98);
-  background: #fef2f2;
-}
-
-/* ================= FOOTER ================= */
-
-.account-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  padding: 20px 0 5px;
-  color: #94a3b8;
-  font-size: 9px;
+.acc-badge-blue {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: #1565FF;
+  color: white;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-/* ================= MOBILE ================= */
+/* =====================================================
+   LOGOUT
+   ===================================================== */
+
+.acc-logout-btn {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 4px;
+  border-radius: 16px;
+  border: none;
+  background: rgba(255,59,48,0.09);
+  color: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acc-logout-btn:active {
+  background: rgba(255,59,48,0.16);
+  transform: scale(0.98);
+}
+
+/* =====================================================
+   SUB-PAGES SHARED
+   ===================================================== */
+
+.acc-subpage {
+  min-height: 100vh;
+  background: #f2f2f7;
+  padding-bottom: 100px;
+}
+
+/* Sub-page sticky header bar */
+.acc-sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 12px;
+  background: white;
+  border-bottom: 1px solid #f2f2f7;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.acc-back-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f2f2f7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1565FF;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.acc-back-btn:active {
+  background: #e5e5ea;
+}
+
+.acc-sub-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+
+.acc-sub-desc {
+  font-size: 13px;
+  color: #8e8e93;
+  text-align: center;
+  padding: 14px 20px 6px;
+  margin: 0;
+}
+
+/* ── Avatar block (compte-edit) ── */
+.acc-sub-avatar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 16px;
+}
+
+.acc-sub-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1565FF 0%, #0A84FF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 28px rgba(21,101,255,0.32);
+  margin-bottom: 12px;
+}
+
+.acc-sub-avatar-edit {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1565FF;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Info card (compte-password) ── */
+.acc-sub-info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 16px;
+  padding: 20px;
+  background: #EBF2FF;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.acc-sub-info-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #1565FF;
+  line-height: 1.55;
+}
+
+/* ── Forms ── */
+.acc-form-group {
+  padding: 12px 16px;
+}
+
+.acc-form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8e8e93;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.acc-form-input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #1c1c1e;
+  background: transparent;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.acc-form-input::placeholder {
+  color: #c7c7cc;
+}
+
+.acc-save-btn {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 14px auto;
+  padding: 15px;
+  border: none;
+  border-radius: 13px;
+  background: #1565FF;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+  font-family: inherit;
+}
+
+.acc-save-btn:active {
+  opacity: 0.82;
+  transform: scale(0.98);
+}
+
+/* ── Devices ── */
+.acc-device-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 14px;
+}
+
+.acc-device-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: #f2f2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.acc-device-icon.blue {
+  background: #EBF2FF;
+}
+
+.acc-device-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.acc-device-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.acc-device-info span {
+  display: block;
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 2px;
+}
+
+.acc-device-status {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #8e8e93 !important;
+  margin-top: 4px !important;
+}
+
+.acc-device-status.active {
+  color: #34c759 !important;
+  font-weight: 600 !important;
+}
+
+.acc-device-disconnect {
+  flex-shrink: 0;
+  border: 1px solid #ff3b30;
+  background: rgba(255,59,48,0.06);
+  color: #ff3b30;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Toggle rows (notifications) ── */
+.acc-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.acc-toggle-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.acc-toggle-info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1c1c1e;
+}
+
+.acc-toggle-info span {
+  display: block;
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 2px;
+}
+
+/* iOS-style toggle */
+.acc-toggle {
+  width: 51px;
+  height: 31px;
+  border-radius: 15.5px;
+  border: none;
+  background: #e5e5ea;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.26s ease;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acc-toggle.on {
+  background: #34c759;
+}
+
+.acc-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+  transition: transform 0.26s cubic-bezier(.34,1.3,.7,1);
+  display: block;
+}
+
+.acc-toggle.on .acc-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ── Theme selector (appearance) ── */
+.acc-theme-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acc-theme-row:active {
+  background: #f2f2f7;
+}
+
+.acc-theme-check {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── About hero ── */
+.acc-about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 0 20px;
+}
+
+.acc-about-icon {
+  font-size: 60px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.acc-about-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1c1c1e;
+  margin-bottom: 4px;
+}
+
+.acc-about-version {
+  font-size: 14px;
+  color: #8e8e93;
+}
+
+/* ── Legal pages ── */
+.acc-legal-card {
+  padding: 20px;
+}
+
+.acc-legal-card h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+
+.acc-legal-card h4 {
+  margin: 16px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.acc-legal-card p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #636366;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
 
 @media (max-width: 380px) {
-  .account-screen {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .account-header h2 {
-    font-size: 26px;
-  }
-
-  .profile-card {
-    padding: 17px;
-    border-radius: 21px;
-  }
-
-  .profile-avatar {
-    width: 56px;
-    height: 56px;
-  }
-
-  .account-row {
-    min-height: 65px;
-    padding: 9px 11px;
-  }
-
-  .row-icon {
-    width: 39px;
-    height: 39px;
-  }
+  .acc-header { padding-top: 44px; }
+  .acc-avatar { width: 70px; height: 70px; }
+  .acc-profile-name { font-size: 19px; }
+  .acc-meta-bar { padding: 14px 16px; }
 }
