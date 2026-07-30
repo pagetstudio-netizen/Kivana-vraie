@@ -51,7 +51,44 @@ body {
 
 /* CONTENU */
 .content {
-  padding: 120px 20px 20px;
+  padding: 0;
+}
+
+/* ── En-tête natif par page ── */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  padding: 14px 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1c1c1e;
+  letter-spacing: -0.5px;
+}
+
+.page-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-screen {
+  min-height: 100vh;
+  background: #f2f2f7;
+  padding-bottom: 90px;
+}
+
+.page-body {
+  padding: 16px 16px 0;
 }
 
 
@@ -352,8 +389,140 @@ input::placeholder {
 
 /* Responsive */
 @media (max-width: 480px) {
-  .content { padding: 100px 12px 20px; }
+  .content { padding: 0; }
   .card { padding: 18px; border-radius: 14px; }
   .banner img { min-width: 220px; height: 120px; }
   .bottom-nav { height: 70px; }
+}
+
+/* ── Scanner html5-qrcode — style natif professionnel ── */
+#html5-qrcode-button-camera-permission {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  margin: 12px 0 8px;
+  border: none;
+  border-radius: 14px;
+  background: #1565FF;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 16px rgba(21, 101, 255, 0.35);
+}
+
+#html5-qrcode-button-camera-permission:active {
+  opacity: 0.82;
+  transform: scale(0.98);
+}
+
+#html5-qrcode-anchor-scan-type-change {
+  display: block;
+  text-align: center;
+  margin: 4px 0 8px;
+  padding: 10px;
+  color: #1565FF;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#html5-qrcode-button-camera-start,
+#html5-qrcode-button-camera-stop {
+  display: inline-block;
+  padding: 11px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#html5-qrcode-button-camera-start {
+  background: #1565FF;
+  color: white;
+  box-shadow: 0 4px 14px rgba(21, 101, 255, 0.3);
+}
+
+#html5-qrcode-button-camera-stop {
+  background: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+}
+
+#html5-qrcode-button-camera-start:active,
+#html5-qrcode-button-camera-stop:active {
+  opacity: 0.82;
+  transform: scale(0.98);
+}
+
+#html5-qrcode-select-camera {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e5ea;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  background: white;
+  color: #1c1c1e;
+  margin: 6px 0;
+  outline: none;
+}
+
+#html5-qrcode-button-file-selection {
+  display: inline-block;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #f2f2f7;
+  color: #1565FF;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+#html5-qrcode-button-file-selection:active {
+  background: #e5e5ea;
+}
+
+/* Masquer le "Powered by" */
+#html5qr-code-full-region__dashboard_section_csr span a,
+.html5-qrcode-element[href*="github"] {
+  display: none !important;
+}
+
+/* Conteneur principal du reader */
+#reader {
+  border: none !important;
+  padding: 0 !important;
+}
+
+#reader__scan_region {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#reader__dashboard {
+  padding: 8px 0 0 !important;
+}
+
+/* Message d'erreur permission */
+#reader__status_span {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 59, 48, 0.08);
+  color: #ff3b30;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }

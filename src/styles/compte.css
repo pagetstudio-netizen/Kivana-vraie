@@ -190,17 +190,17 @@
 }
 
 .acc-list-card {
-  margin: 0 16px;
-  border-radius: 16px;
+  margin: 0;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .acc-list-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 11px 16px;
-  min-height: 46px;
+  gap: 12px;
+  padding: 9px 16px;
+  min-height: 40px;
   cursor: pointer;
   transition: background 0.12s ease;
   -webkit-tap-highlight-color: transparent;
@@ -211,9 +211,9 @@
 }
 
 .acc-list-ico {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,7 +232,7 @@
 
 .acc-list-label {
   flex: 1;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 450;
   color: #1c1c1e;
   min-width: 0;
@@ -254,6 +254,7 @@
 
 .acc-logout-card {
   margin-top: 12px;
+  margin: 12px 0 0;
   cursor: pointer;
 }
 
@@ -263,7 +264,7 @@
 
 .acc-body {
   background: #f2f2f7;
-  padding: 14px 16px 16px;
+  padding: 14px 0 16px;
 }
 
 /* =====================================================

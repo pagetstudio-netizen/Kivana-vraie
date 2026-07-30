@@ -3,6 +3,7 @@ import "./styles/historique.css"
 import { useState, useEffect, useMemo } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { Capacitor } from "@capacitor/core"
 import "./App.css"
 import {
   FiBell,
@@ -65,19 +66,43 @@ function App() {
   useEffect(() => {
     const initialiserNotifications = async () => {
       try {
-        const permission = await LocalNotifications.checkPermissions()
-        if (permission.display !== "granted") {
-          const demande = await LocalNotifications.requestPermissions()
-          if (demande.display === "granted") {
-            console.log("Notifications autorisées ✅")
+        if (Capacitor.isNativePlatform()) {
+          // ── Plateforme native (Android/iOS via Capacitor) ──
+          // 1. Créer le canal de notification (obligatoire Android 8+)
+          await LocalNotifications.createChannel({
+            id: "kivana-default",
+            name: "Kivana Scanner",
+            description: "Notifications Kivana Scanner",
+            importance: 5,       // IMPORTANCE_HIGH
+            visibility: 1,       // VISIBILITY_PUBLIC
+            sound: "default",
+            vibration: true,
+            lights: true,
+            lightColor: "#1565FF"
+          })
+          // 2. Vérifier / demander la permission
+          const perm = await LocalNotifications.checkPermissions()
+          if (perm.display !== "granted") {
+            const res = await LocalNotifications.requestPermissions()
+            console.log("Résultat permission native :", res.display)
           } else {
-            console.log("Permission de notification refusée ❌")
+            console.log("Notifications natives déjà autorisées ✅")
           }
         } else {
-          console.log("Notifications déjà autorisées ✅")
+          // ── Navigateur web (Replit / PWA) ──
+          if (!("Notification" in window)) {
+            console.log("Ce navigateur ne supporte pas les notifications")
+            return
+          }
+          if (Notification.permission === "default") {
+            const res = await Notification.requestPermission()
+            console.log("Permission web :", res)
+          } else {
+            console.log("Permission web déjà :", Notification.permission)
+          }
         }
       } catch (error) {
-        console.error("Erreur permissions notifications :", error)
+        console.error("Erreur initialisation notifications :", error)
       }
     }
     initialiserNotifications()
@@ -178,14 +203,34 @@ function App() {
 
   const envoyerNotification = async (title, body) => {
     try {
-      await LocalNotifications.schedule({
-        notifications: [{
-          title,
-          body,
-          id: Date.now(),
-          schedule: { at: new Date(Date.now() + 500) }
-        }]
-      })
+      // ID doit être un entier 32 bits positif (pas Date.now() qui dépasse)
+      const notifId = Math.floor(Math.random() * 2147483647)
+
+      if (Capacitor.isNativePlatform()) {
+        // ── Native Android/iOS ──
+        const perm = await LocalNotifications.checkPermissions()
+        if (perm.display !== "granted") return
+        await LocalNotifications.schedule({
+          notifications: [{
+            title,
+            body,
+            id: notifId,
+            channelId: "kivana-default",
+            schedule: { at: new Date(Date.now() + 300) },
+            smallIcon: "ic_stat_icon_config_sample",
+            iconColor: "#1565FF",
+            sound: "default"
+          }]
+        })
+      } else {
+        // ── Web fallback ──
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(title, {
+            body,
+            icon: "/favicon.ico"
+          })
+        }
+      }
     } catch (error) {
       console.error("Erreur notification :", error)
     }
@@ -244,18 +289,6 @@ function App() {
   return (
     <div className={`app${isComptePage ? " on-compte" : ""}`}>
 
-      {/* Header fixe — masqué uniquement sur les pages compte */}
-      {user && !isComptePage && (
-        <header className="fixed-header">
-          <div className="header-left">
-            <h1><FiTag style={{verticalAlign:'middle', marginRight:6}} /> Kivana Scanner</h1>
-            <p>Contrôle des billets</p>
-          </div>
-          <button className="notification-btn" onClick={() => setPage("notifications")}>
-            <FiBell size={20} />
-          </button>
-        </header>
-      )}
 
       <main className="content">
 
@@ -301,47 +334,73 @@ function App() {
           <>
             {/* ===================== ACCUEIL ===================== */}
             {page === "accueil" && (
-              <>
-                <div className="card">
-                  <h2>Prêt à scanner ?</h2>
-                  <p>Vérifiez rapidement la validité d'un billet.</p>
-                  <button className="scanButton" onClick={startScanner}>
-                    <FiCamera size={20} style={{verticalAlign:'middle', marginRight:8}} />
-                    Scanner un billet
-                  </button>
+              <div className="page-screen">
+                <div className="page-header">
+                  <h1>Accueil</h1>
+                  <div className="page-header-right">
+                    <button className="notification-btn" onClick={() => setPage("notifications")}>
+                      <FiBell size={20} />
+                    </button>
+                  </div>
                 </div>
-                <h2 className="section-title"><FiBarChart2 style={{verticalAlign:'middle', marginRight:7}} />Statistiques</h2>
-                <div className="stats">
-                  <div><b>{scanHistory.length}</b><span>Scans</span></div>
-                  <div><b>{statValide}</b><span>Valides</span></div>
-                  <div><b>{statRefuse}</b><span>Refusés</span></div>
+                <div className="page-body">
+                  <div className="card">
+                    <h2>Prêt à scanner ?</h2>
+                    <p>Vérifiez rapidement la validité d'un billet.</p>
+                    <button className="scanButton" onClick={startScanner}>
+                      <FiCamera size={20} style={{verticalAlign:'middle', marginRight:8}} />
+                      Scanner un billet
+                    </button>
+                  </div>
+                  <h2 className="section-title"><FiBarChart2 style={{verticalAlign:'middle', marginRight:7}} />Statistiques</h2>
+                  <div className="stats">
+                    <div><b>{scanHistory.length}</b><span>Scans</span></div>
+                    <div><b>{statValide}</b><span>Valides</span></div>
+                    <div><b>{statRefuse}</b><span>Refusés</span></div>
+                  </div>
+                  <h2 className="section-title"><FiTag style={{verticalAlign:'middle', marginRight:7}} />Actualités Kivana</h2>
+                  <div className="banner">
+                    {banners.map((img, index) => (
+                      <img key={index} src={img} alt="Actualité Kivana" />
+                    ))}
+                  </div>
                 </div>
-                <h2 className="section-title"><FiTag style={{verticalAlign:'middle', marginRight:7}} />Actualités Kivana</h2>
-                <div className="banner">
-                  {banners.map((img, index) => (
-                    <img key={index} src={img} alt="Actualité Kivana" />
-                  ))}
-                </div>
-              </>
+              </div>
             )}
 
             {/* ===================== NOTIFICATIONS ===================== */}
             {page === "notifications" && (
-              <div className="card">
-                <h2><FiBell size={20} style={{verticalAlign:'middle', marginRight:7}} />Notifications</h2>
-                <div className="notification-item"><FiZap size={15} style={{verticalAlign:'middle', marginRight:6, color:'#1565FF'}} /> Bienvenue sur Kivana Scanner</div>
-                <div className="notification-item"><FiCheckCircle size={15} style={{verticalAlign:'middle', marginRight:6, color:'#34c759'}} /> Votre système de contrôle est opérationnel</div>
-                <div className="notification-item"><FiMessageCircle size={15} style={{verticalAlign:'middle', marginRight:6, color:'#8e8e93'}} /> Aucune nouvelle notification</div>
-                <button className="scanButton" onClick={() => setPage("accueil")}>Retour</button>
+              <div className="page-screen">
+                <div className="page-header">
+                  <button className="acc-back-btn" onClick={() => setPage("accueil")}>
+                    <FiChevronLeft size={22} />
+                  </button>
+                  <h1 style={{fontSize:17, fontWeight:700, margin:0}}>Notifications</h1>
+                  <div style={{width:36}} />
+                </div>
+                <div className="page-body">
+                  <div className="card">
+                    <div className="notification-item"><FiZap size={15} style={{verticalAlign:'middle', marginRight:6, color:'#1565FF'}} /> Bienvenue sur Kivana Scanner</div>
+                    <div className="notification-item"><FiCheckCircle size={15} style={{verticalAlign:'middle', marginRight:6, color:'#34c759'}} /> Votre système de contrôle est opérationnel</div>
+                    <div className="notification-item"><FiMessageCircle size={15} style={{verticalAlign:'middle', marginRight:6, color:'#8e8e93'}} /> Aucune nouvelle notification</div>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* ===================== SCANNER ===================== */}
             {page === "scanner" && (
-              <div className="card">
-                <h2><FiCamera size={20} style={{verticalAlign:'middle', marginRight:7}} />Scanner QR</h2>
-                <div id="reader"></div>
-                {result && <p className="result">Résultat : {result}</p>}
+              <div className="page-screen">
+                <div className="page-header">
+                  <h1>Scanner</h1>
+                </div>
+                <div className="page-body">
+                  <div className="card">
+                    <h2><FiCamera size={20} style={{verticalAlign:'middle', marginRight:7}} />Scanner QR</h2>
+                    <div id="reader"></div>
+                    {result && <p className="result">Résultat : {result}</p>}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -616,7 +675,7 @@ function App() {
                   <div className="acc-card acc-list-card" style={{marginTop: '12px'}}>
                     <div className="acc-list-row" onClick={() => setPage("compte-about")}>
                       <span className="acc-list-ico acc-ico-blue"><FiTag size={17} /></span>
-                      <span className="acc-list-label">Application Kivana Scanner</span>
+                      <span className="acc-list-label">Kivana Scanner</span>
                       <span className="acc-list-val">Version 1.0.0</span>
                       <FiChevronRight className="acc-row-chevron" />
                     </div>
