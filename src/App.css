@@ -149,6 +149,19 @@ body {
   box-sizing: content-box;
 }
 
+/* Pill bleue glissante */
+.nav-pill {
+  position: absolute;
+  top: 8px;
+  width: calc(25% - 12px);
+  height: 52px;
+  background: #1565FF;
+  border-radius: 18px;
+  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .bottom-nav button {
   border: none;
   background: none;
@@ -162,15 +175,18 @@ body {
   padding: 0;
   margin: 0;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: color 0.25s ease;
   -webkit-tap-highlight-color: transparent;
   /* taille fixe pour éviter tout décalage */
   min-width: 0;
   height: 70px;
+  position: relative;
+  z-index: 1;
 }
 
 .bottom-nav button.nav-active {
-  color: #1565FF;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .bottom-nav button span {
@@ -178,6 +194,26 @@ body {
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
+}
+
+.bottom-nav button.nav-active span {
+  font-weight: 700;
+}
+
+/* ── PNG nav icons ── */
+.nav-icon-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  /* inactive: silhouette grise */
+  filter: brightness(0) opacity(0.38);
+  transition: filter 0.25s ease;
+  display: block;
+}
+
+.bottom-nav button.nav-active .nav-icon-img {
+  /* active (sur pill bleue): blanc pur */
+  filter: brightness(0) invert(1);
 }
 
 

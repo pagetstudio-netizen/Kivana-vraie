@@ -1,5 +1,6 @@
 import "./styles/compte.css"
-import { useState, useEffect } from "react"
+import "./styles/historique.css"
+import { useState, useEffect, useMemo } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
 import { LocalNotifications } from "@capacitor/local-notifications"
 import "./App.css"
@@ -29,8 +30,33 @@ import {
   FiCheckCircle,
   FiZap,
   FiMessageCircle,
-  FiTag
+  FiTag,
+  FiSearch,
+  FiX,
+  FiMapPin,
+  FiCalendar,
+  FiClock,
+  FiAlertCircle,
+  FiRefreshCw,
+  FiTrendingUp,
+  FiHash,
+  FiUser as FiUserIcon
 } from "react-icons/fi"
+import { BsQrCodeScan, BsClockHistory } from "react-icons/bs"
+
+/* ── Mock scan history (pre-populated so page looks real) ── */
+const MOCK_SCANS = [
+  { id:"SCN-010", ticketId:"TKT-8821-2026", event:"Gala Kivana 2026",        location:"Sofitel Abidjan",      scanTime:"2026-07-29T14:47:00", status:"valide",  gate:"Entrée VIP",       zone:"VIP",      holder:"Sophie Martin",    agentId:"KIV-0001" },
+  { id:"SCN-009", ticketId:"TKT-6643-2026", event:"Gala Kivana 2026",        location:"Sofitel Abidjan",      scanTime:"2026-07-29T14:31:00", status:"valide",  gate:"Entrée A",         zone:"Standard", holder:"Karim Ouattara",   agentId:"KIV-0001" },
+  { id:"SCN-008", ticketId:"TKT-3310-2026", event:"Gala Kivana 2026",        location:"Sofitel Abidjan",      scanTime:"2026-07-29T14:18:00", status:"refuse",  gate:"Entrée A",         zone:"Standard", holder:"Inconnu",          agentId:"KIV-0001" },
+  { id:"SCN-007", ticketId:"TKT-9901-2026", event:"Gala Kivana 2026",        location:"Sofitel Abidjan",      scanTime:"2026-07-29T14:02:00", status:"doublon", gate:"Entrée B",         zone:"Standard", holder:"Moussa Diallo",    agentId:"KIV-0001" },
+  { id:"SCN-006", ticketId:"TKT-5512-2026", event:"Concert Afro Summer",     location:"Palais de la Culture", scanTime:"2026-07-28T21:15:00", status:"valide",  gate:"Entrée principale",zone:"Carré OR", holder:"Aminata Traoré",  agentId:"KIV-0001" },
+  { id:"SCN-005", ticketId:"TKT-4478-2026", event:"Concert Afro Summer",     location:"Palais de la Culture", scanTime:"2026-07-28T21:03:00", status:"valide",  gate:"Entrée principale",zone:"Standard", holder:"Jean-Pierre Kone", agentId:"KIV-0001" },
+  { id:"SCN-004", ticketId:"TKT-2290-2026", event:"Concert Afro Summer",     location:"Palais de la Culture", scanTime:"2026-07-28T20:44:00", status:"refuse",  gate:"Entrée principale",zone:"Standard", holder:"Inconnu",          agentId:"KIV-0001" },
+  { id:"SCN-003", ticketId:"TKT-7763-2026", event:"Forum Tech Abidjan",      location:"CCIAD, Abidjan",       scanTime:"2026-07-27T09:30:00", status:"valide",  gate:"Accès conférence", zone:"Premium",  holder:"Dr. Awa Konaté",   agentId:"KIV-0001" },
+  { id:"SCN-002", ticketId:"TKT-1195-2026", event:"Forum Tech Abidjan",      location:"CCIAD, Abidjan",       scanTime:"2026-07-27T09:11:00", status:"doublon", gate:"Accès conférence", zone:"Standard", holder:"Ibrahim Coulibaly",agentId:"KIV-0001" },
+  { id:"SCN-001", ticketId:"TKT-0042-2026", event:"Forum Tech Abidjan",      location:"CCIAD, Abidjan",       scanTime:"2026-07-27T08:58:00", status:"valide",  gate:"Accès conférence", zone:"Standard", holder:"Fatou Sylla",      agentId:"KIV-0001" },
+]
 
 function App() {
   const [page, setPage] = useState("accueil")
@@ -77,6 +103,58 @@ function App() {
 
   // Theme state
   const [theme, setTheme] = useState("clair")
+
+  // Historique state
+  const [scanHistory, setScanHistory] = useState(() => {
+    try {
+      const s = localStorage.getItem("kivana_scan_history")
+      return s ? JSON.parse(s) : MOCK_SCANS
+    } catch (e) { return MOCK_SCANS }
+  })
+  const [histFilter, setHistFilter] = useState("tous")
+  const [histSearch, setHistSearch] = useState("")
+  const [histDetail, setHistDetail] = useState(null)
+
+  /* ── Helper: group scans by day ── */
+  const groupScansByDay = (scans) => {
+    const today = new Date()
+    const yesterday = new Date(today - 86400000)
+    const groups = {}
+    scans.forEach(scan => {
+      const d = new Date(scan.scanTime)
+      const key = d.toDateString()
+      if (!groups[key]) {
+        const label = d.toDateString() === today.toDateString() ? "Aujourd'hui"
+          : d.toDateString() === yesterday.toDateString() ? "Hier"
+          : d.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long" })
+        groups[key] = { label, timestamp: d.getTime(), items: [] }
+      }
+      groups[key].items.push(scan)
+    })
+    return Object.values(groups).sort((a, b) => b.timestamp - a.timestamp)
+  }
+
+  /* ── Filtered + searched scans ── */
+  const filteredScans = useMemo(() => {
+    return scanHistory
+      .filter(s => histFilter === "tous" || s.status === histFilter)
+      .filter(s => {
+        if (!histSearch) return true
+        const q = histSearch.toLowerCase()
+        return s.ticketId.toLowerCase().includes(q)
+          || s.event.toLowerCase().includes(q)
+          || s.holder.toLowerCase().includes(q)
+      })
+      .sort((a, b) => new Date(b.scanTime) - new Date(a.scanTime))
+  }, [scanHistory, histFilter, histSearch])
+
+  const histGroups = useMemo(() => groupScansByDay(filteredScans), [filteredScans])
+  const statValide  = scanHistory.filter(s => s.status === "valide").length
+  const statRefuse  = scanHistory.filter(s => s.status === "refuse").length
+
+  /* ── Format scan time ── */
+  const formatTime = (iso) => new Date(iso).toLocaleTimeString("fr-FR", { hour:"2-digit", minute:"2-digit" })
+  const formatDateTime = (iso) => new Date(iso).toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" })
 
   const banners = [
     "https://res.cloudinary.com/fa719lho/image/upload/v1784366939/Bloum-Cash-1-1_e0rlfv.jpg",
@@ -166,7 +244,7 @@ function App() {
   return (
     <div className={`app${isComptePage ? " on-compte" : ""}`}>
 
-      {/* Header fixe — masqué sur les pages compte */}
+      {/* Header fixe — masqué uniquement sur les pages compte */}
       {user && !isComptePage && (
         <header className="fixed-header">
           <div className="header-left">
@@ -234,9 +312,9 @@ function App() {
                 </div>
                 <h2 className="section-title"><FiBarChart2 style={{verticalAlign:'middle', marginRight:7}} />Statistiques</h2>
                 <div className="stats">
-                  <div><b>0</b><span>Scans</span></div>
-                  <div><b>0</b><span>Valides</span></div>
-                  <div><b>0</b><span>Refusés</span></div>
+                  <div><b>{scanHistory.length}</b><span>Scans</span></div>
+                  <div><b>{statValide}</b><span>Valides</span></div>
+                  <div><b>{statRefuse}</b><span>Refusés</span></div>
                 </div>
                 <h2 className="section-title"><FiTag style={{verticalAlign:'middle', marginRight:7}} />Actualités Kivana</h2>
                 <div className="banner">
@@ -269,9 +347,217 @@ function App() {
 
             {/* ===================== HISTORIQUE ===================== */}
             {page === "historique" && (
-              <div className="card">
-                <h2><FiClipboard size={20} style={{verticalAlign:'middle', marginRight:7}} />Historique</h2>
-                <p>Aucun scan pour le moment.</p>
+              <div className="hist-screen">
+
+                {/* ── Sticky header ── */}
+                <div className="hist-header">
+                  <div className="hist-header-top">
+                    <h1>Historique</h1>
+                  </div>
+                  <p className="hist-header-sub">{scanHistory.length} scan{scanHistory.length !== 1 ? "s" : ""} enregistré{scanHistory.length !== 1 ? "s" : ""}</p>
+
+                  {/* Search */}
+                  <div className="hist-search-wrap">
+                    <span className="hist-search-icon"><FiSearch size={15} /></span>
+                    <input
+                      className="hist-search-input"
+                      type="text"
+                      placeholder="Rechercher un billet, événement…"
+                      value={histSearch}
+                      onChange={e => setHistSearch(e.target.value)}
+                    />
+                    {histSearch && (
+                      <button className="hist-search-clear" onClick={() => setHistSearch("")}>
+                        <FiX size={11} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Filters */}
+                  <div className="hist-filters">
+                    {[
+                      { key:"tous",    label:"Tous",     color:"#1565FF" },
+                      { key:"valide",  label:"Valides",  color:"#34c759" },
+                      { key:"refuse",  label:"Refusés",  color:"#ff3b30" },
+                      { key:"doublon", label:"Doublons", color:"#ff9500" },
+                    ].map(f => (
+                      <button
+                        key={f.key}
+                        className={`hist-filter-chip${histFilter === f.key ? ` active-${f.key}` : ""}`}
+                        onClick={() => setHistFilter(f.key)}
+                      >
+                        {histFilter !== f.key && (
+                          <span className="hist-filter-dot" style={{ background: f.color }} />
+                        )}
+                        {f.label}
+                        <span style={{ fontWeight:400, opacity:0.7, fontSize:12 }}>
+                          {" "}({scanHistory.filter(s => f.key === "tous" || s.status === f.key).length})
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Stats row ── */}
+                <div className="hist-stats">
+                  <div className="hist-stat-card">
+                    <span className="hist-stat-num blue">{scanHistory.length}</span>
+                    <span className="hist-stat-label">Total</span>
+                  </div>
+                  <div className="hist-stat-card">
+                    <span className="hist-stat-num green">{statValide}</span>
+                    <span className="hist-stat-label">Valides</span>
+                  </div>
+                  <div className="hist-stat-card">
+                    <span className="hist-stat-num red">{statRefuse}</span>
+                    <span className="hist-stat-label">Refusés</span>
+                  </div>
+                </div>
+
+                {/* ── Scan list ── */}
+                <div className="hist-list">
+                  {filteredScans.length === 0 ? (
+                    <div className="hist-empty">
+                      <div className="hist-empty-icon">
+                        <BsClockHistory size={36} />
+                      </div>
+                      <h3>Aucun résultat</h3>
+                      <p>{histSearch ? "Aucun scan ne correspond à votre recherche." : "Aucun scan dans cette catégorie."}</p>
+                    </div>
+                  ) : (
+                    histGroups.map(group => (
+                      <div key={group.label}>
+                        <div className="hist-group-label">{group.label}</div>
+                        {group.items.map(scan => {
+                          const statusLabel = { valide:"Valide", refuse:"Refusé", doublon:"Doublon" }[scan.status]
+                          const StatusIcon = { valide: FiCheckCircle, refuse: FiAlertCircle, doublon: FiRefreshCw }[scan.status]
+                          return (
+                            <div key={scan.id} className="hist-item" onClick={() => setHistDetail(scan)}>
+                              <div className={`hist-item-bar ${scan.status}`} />
+                              <div className="hist-item-body">
+                                <div className="hist-item-row1">
+                                  <span className="hist-item-event">{scan.event}</span>
+                                  <span className={`hist-item-badge ${scan.status}`}>
+                                    <StatusIcon size={11} />
+                                    {statusLabel}
+                                  </span>
+                                </div>
+                                <div className="hist-item-row2">
+                                  <span className="hist-item-ticket">{scan.ticketId}</span>
+                                  <span className="hist-item-time">
+                                    <FiClock size={11} />
+                                    {formatTime(scan.scanTime)}
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="hist-item-chevron"><FiChevronRight size={16} /></span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* ── Detail sheet ── */}
+                {histDetail && (
+                  <div className="hist-detail-overlay" onClick={e => { if (e.target === e.currentTarget) setHistDetail(null) }}>
+                    <div className="hist-detail-sheet">
+                      <div className="hist-detail-handle" />
+                      <div className="hist-detail-header">
+                        <h2>Détail du scan</h2>
+                        <button className="hist-detail-close" onClick={() => setHistDetail(null)}>
+                          <FiX size={14} />
+                        </button>
+                      </div>
+
+                      {/* Status banner */}
+                      <div className={`hist-detail-status-banner ${histDetail.status}`}>
+                        <div className="hist-detail-status-icon">
+                          { histDetail.status === "valide"  && <FiCheckCircle size={24} /> }
+                          { histDetail.status === "refuse"  && <FiAlertCircle size={24} /> }
+                          { histDetail.status === "doublon" && <FiRefreshCw size={24} /> }
+                        </div>
+                        <div className="hist-detail-status-text">
+                          <strong>
+                            { histDetail.status === "valide"  && "Billet valide" }
+                            { histDetail.status === "refuse"  && "Billet refusé" }
+                            { histDetail.status === "doublon" && "Doublon détecté" }
+                          </strong>
+                          <span>Scanné le {formatDateTime(histDetail.scanTime)}</span>
+                        </div>
+                      </div>
+
+                      {/* Ticket info */}
+                      <div className="hist-detail-section">
+                        <div className="hist-detail-section-title">Informations du billet</div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiHash size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Identifiant ticket</span>
+                            <span className="hist-detail-row-value mono">{histDetail.ticketId}</span>
+                          </div>
+                        </div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiTag size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Événement</span>
+                            <span className="hist-detail-row-value">{histDetail.event}</span>
+                          </div>
+                        </div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiMapPin size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Lieu</span>
+                            <span className="hist-detail-row-value">{histDetail.location}</span>
+                          </div>
+                        </div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiUserIcon size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Porteur du billet</span>
+                            <span className="hist-detail-row-value">{histDetail.holder}</span>
+                          </div>
+                        </div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiTrendingUp size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Zone</span>
+                            <span className="hist-detail-row-value">{histDetail.zone}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Scan info */}
+                      <div className="hist-detail-section">
+                        <div className="hist-detail-section-title">Informations de scan</div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiCalendar size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Date et heure</span>
+                            <span className="hist-detail-row-value">{formatDateTime(histDetail.scanTime)}</span>
+                          </div>
+                        </div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiMapPin size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Point d'entrée</span>
+                            <span className="hist-detail-row-value">{histDetail.gate}</span>
+                          </div>
+                        </div>
+                        <div className="hist-detail-row">
+                          <div className="hist-detail-row-icon"><FiUserIcon size={15} /></div>
+                          <div className="hist-detail-row-content">
+                            <span className="hist-detail-row-label">Agent</span>
+                            <span className="hist-detail-row-value">{histDetail.agentId}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+
               </div>
             )}
 
@@ -281,8 +567,9 @@ function App() {
             {page === "compte" && (
               <div className="account-screen">
 
-                {/* ── HEADER BLEU ── */}
+                {/* ── HEADER BLEU STICKY ── */}
                 <div className="acc-header">
+                  {/* Topbar */}
                   <div className="acc-header-topbar">
                     <span className="acc-header-title">Compte</span>
                     <button className="acc-bell-btn" onClick={() => setPage("notifications")}>
@@ -291,9 +578,10 @@ function App() {
                     </button>
                   </div>
 
+                  {/* Profil */}
                   <div className="acc-profile-row">
                     <div className="acc-avatar">
-                      <FiUser size={40} color="rgba(255,255,255,0.85)" />
+                      <FiUser size={36} color="rgba(255,255,255,0.9)" />
                     </div>
                     <div className="acc-profile-info">
                       <div className="acc-profile-name">{user?.name || "Agent Kivana"}</div>
@@ -304,137 +592,57 @@ function App() {
                       </div>
                     </div>
                   </div>
-
-                  <div className="acc-meta-bar">
-                    <div className="acc-meta-item">
-                      <span className="acc-meta-label">ID Agent</span>
-                      <strong className="acc-meta-value">{user?.id || "KIV-0001"}</strong>
-                    </div>
-                    <div className="acc-meta-divider" />
-                    <div className="acc-meta-item">
-                      <span className="acc-meta-label">Organisation</span>
-                      <strong className="acc-meta-value">{user?.org || "Kivana"}</strong>
-                    </div>
-                  </div>
                 </div>
 
-                {/* ── CORPS BLANC ── */}
+                {/* ── LISTE PRINCIPALE ── */}
                 <div className="acc-body">
 
-                  {/* Informations */}
-                  <div className="acc-section">
-                    <div className="acc-section-head">
-                      <span className="acc-section-icon"><FiUser size={14} /></span>
-                      <span className="acc-section-label">Informations</span>
+                  {/* Section : Mon compte */}
+                  <div className="acc-section-label-row">Mon compte</div>
+                  <div className="acc-card acc-list-card">
+                    <div className="acc-list-row" onClick={() => setPage("compte-edit")}>
+                      <span className="acc-list-ico acc-ico-blue"><FiUser size={17} /></span>
+                      <span className="acc-list-label">Modifier le profil</span>
+                      <FiChevronRight className="acc-row-chevron" />
                     </div>
-                    <div className="acc-card">
-                      <div className="acc-row" onClick={() => setPage("compte-edit")}>
-                        <span className="acc-row-ico"><FiUser size={16} /></span>
-                        <span className="acc-row-label">Nom de l'agent</span>
-                        <span className="acc-row-val">{user?.name || "Agent Kivana"}</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row">
-                        <span className="acc-row-ico"><FiCreditCard size={16} /></span>
-                        <span className="acc-row-label">ID Agent</span>
-                        <span className="acc-row-val">{user?.id || "KIV-0001"}</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row">
-                        <span className="acc-row-ico"><FiBriefcase size={16} /></span>
-                        <span className="acc-row-label">Organisation</span>
-                        <span className="acc-row-val">{user?.org || "Kivana"}</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row">
-                        <span className="acc-row-ico"><FiShield size={16} /></span>
-                        <span className="acc-row-label">Rôle</span>
-                        <span className="acc-row-val acc-val-sm">{user?.role || "Agent de contrôle des billets"}</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
+                    <div className="acc-row-sep" />
+                    <div className="acc-list-row" onClick={() => setPage("compte-password")}>
+                      <span className="acc-list-ico acc-ico-blue"><FiLock size={17} /></span>
+                      <span className="acc-list-label">Modifier le mot de passe</span>
+                      <FiChevronRight className="acc-row-chevron" />
                     </div>
                   </div>
 
-                  {/* Sécurité */}
-                  <div className="acc-section">
-                    <div className="acc-section-head">
-                      <span className="acc-section-icon"><FiLock size={14} /></span>
-                      <span className="acc-section-label">Sécurité</span>
+                  {/* Section : Application */}
+                  <div className="acc-section-label-row">Application</div>
+                  <div className="acc-card acc-list-card">
+                    <div className="acc-list-row" onClick={() => setPage("compte-about")}>
+                      <span className="acc-list-ico acc-ico-blue"><FiTag size={17} /></span>
+                      <span className="acc-list-label">Application Kivana Scanner</span>
+                      <span className="acc-list-val">Version 1.0.0</span>
+                      <FiChevronRight className="acc-row-chevron" />
                     </div>
-                    <div className="acc-card">
-                      <div className="acc-row" onClick={() => setPage("compte-password")}>
-                        <span className="acc-row-ico"><FiLock size={16} /></span>
-                        <span className="acc-row-label">Modifier le mot de passe</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row" onClick={() => setPage("compte-devices")}>
-                        <span className="acc-row-ico"><FiSmartphone size={16} /></span>
-                        <span className="acc-row-label">Appareils connectés</span>
-                        <span className="acc-badge-blue">2</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row" onClick={() => setPage("compte-notif")}>
-                        <span className="acc-row-ico"><FiBell size={16} /></span>
-                        <span className="acc-row-label">Préférences de notifications</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
+                    <div className="acc-row-sep" />
+                    <div className="acc-list-row" onClick={() => setPage("compte-cgu")}>
+                      <span className="acc-list-ico acc-ico-blue"><FiFileText size={17} /></span>
+                      <span className="acc-list-label">Conditions d'utilisation</span>
+                      <FiChevronRight className="acc-row-chevron" />
                     </div>
-                  </div>
-
-                  {/* Préférences */}
-                  <div className="acc-section">
-                    <div className="acc-section-head">
-                      <span className="acc-section-icon"><FiSettings size={14} /></span>
-                      <span className="acc-section-label">Préférences</span>
-                    </div>
-                    <div className="acc-card">
-                      <div className="acc-row" onClick={() => setPage("compte-appearance")}>
-                        <span className="acc-row-ico"><FiSun size={16} /></span>
-                        <span className="acc-row-label">Apparence</span>
-                        <span className="acc-row-val">Thème clair</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* À propos */}
-                  <div className="acc-section">
-                    <div className="acc-section-head">
-                      <span className="acc-section-icon"><FiInfo size={14} /></span>
-                      <span className="acc-section-label">À propos</span>
-                    </div>
-                    <div className="acc-card">
-                      <div className="acc-row" onClick={() => setPage("compte-about")}>
-                        <span className="acc-row-ico"><FiSmartphone size={16} /></span>
-                        <span className="acc-row-label">Application Kivana Scanner</span>
-                        <span className="acc-row-val">Version 1.0.0</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row" onClick={() => setPage("compte-cgu")}>
-                        <span className="acc-row-ico"><FiFileText size={16} /></span>
-                        <span className="acc-row-label">Conditions d'utilisation</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
-                      <div className="acc-row-sep" />
-                      <div className="acc-row" onClick={() => setPage("compte-privacy")}>
-                        <span className="acc-row-ico"><FiLock size={16} /></span>
-                        <span className="acc-row-label">Politique de confidentialité</span>
-                        <FiChevronRight className="acc-row-chevron" />
-                      </div>
+                    <div className="acc-row-sep" />
+                    <div className="acc-list-row" onClick={() => setPage("compte-privacy")}>
+                      <span className="acc-list-ico acc-ico-blue"><FiShield size={17} /></span>
+                      <span className="acc-list-label">Politique de confidentialité</span>
+                      <FiChevronRight className="acc-row-chevron" />
                     </div>
                   </div>
 
                   {/* Déconnexion */}
-                  <button className="acc-logout-btn" onClick={handleLogout}>
-                    <FiLogOut size={17} />
-                    <span>Déconnexion</span>
-                  </button>
+                  <div className="acc-card acc-list-card acc-logout-card" onClick={handleLogout}>
+                    <div className="acc-list-row acc-list-row-danger">
+                      <span className="acc-list-ico acc-ico-red"><FiLogOut size={17} /></span>
+                      <span className="acc-list-label acc-label-danger">Déconnexion</span>
+                    </div>
+                  </div>
 
                 </div>
               </div>
@@ -759,20 +967,32 @@ function App() {
       {/* Navigation visible uniquement si connecté */}
       {user && (
         <nav className="bottom-nav">
+          {/* Pill bleue animée */}
+          <div
+            className="nav-pill"
+            style={{
+              left: `calc(${
+                page === "accueil" ? 0
+                : page === "scanner" ? 1
+                : page === "historique" ? 2
+                : 3
+              } * 25% + 6px)`
+            }}
+          />
           <button className={page === "accueil" ? "nav-active" : ""} onClick={() => setPage("accueil")}>
-            <FiHome size={22} />
+            <img src="/nav-icons/home.png" className="nav-icon-img" alt="Accueil" />
             <span>Accueil</span>
           </button>
           <button className={page === "scanner" ? "nav-active" : ""} onClick={startScanner}>
-            <FiCamera size={22} />
+            <img src="/nav-icons/scanner.png" className="nav-icon-img" alt="Scanner" />
             <span>Scanner</span>
           </button>
           <button className={page === "historique" ? "nav-active" : ""} onClick={() => setPage("historique")}>
-            <FiClipboard size={22} />
+            <img src="/nav-icons/history.png" className="nav-icon-img" alt="Historique" />
             <span>Historique</span>
           </button>
           <button className={isComptePage ? "nav-active" : ""} onClick={() => setPage("compte")}>
-            <FiUser size={22} />
+            <img src="/nav-icons/compte.png" className="nav-icon-img" alt="Compte" />
             <span>Compte</span>
           </button>
         </nav>
