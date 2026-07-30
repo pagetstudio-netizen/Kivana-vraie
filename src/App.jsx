@@ -1,7 +1,7 @@
 import "./styles/compte.css"
 import "./styles/historique.css"
 import { useState, useEffect, useMemo } from "react"
-import { Html5QrcodeScanner } from "html5-qrcode"
+import { Html5Qrcode } from "html5-qrcode"
 import { LocalNotifications } from "@capacitor/local-notifications"
 import { Capacitor } from "@capacitor/core"
 import "./App.css"
@@ -187,21 +187,36 @@ function App() {
     "https://res.cloudinary.com/fa719lho/image/upload/v1784367054/Bloum-Cash-2-1_w7der7.jpg"
   ]
 
-  const startScanner = () => {
-    setPage("scanner")
-    setTimeout(() => {
-      const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false)
-      scanner.render(
-        (decodedText) => {
-          setResult(decodedText)
-          scanner.clear()
-        },
-        () => {}
-      )
-    }, 100)
-  }
+  
+const startScanner = () => {
+  setPage("scanner")
 
-  const envoyerNotification = async (title, body) => {
+  setTimeout(() => {
+    const html5QrCode = new Html5Qrcode("reader")
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      (decodedText) => {
+        setResult(decodedText)
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear()
+        })
+      },
+      (errorMessage) => {
+        // Ignore les erreurs de lecture normales
+      }
+    )
+    .catch((err) => {
+      console.error("Erreur caméra :", err)
+    })
+
+  }, 300)
+}
+const envoyerNotification = async (title, body) => {
     try {
       // ID doit être un entier 32 bits positif (pas Date.now() qui dépasse)
       const notifId = Math.floor(Math.random() * 2147483647)
