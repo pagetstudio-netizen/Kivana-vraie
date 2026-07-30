@@ -598,7 +598,6 @@ function App() {
                 <div className="acc-body">
 
                   {/* Section : Mon compte */}
-                  <div className="acc-section-label-row">Mon compte</div>
                   <div className="acc-card acc-list-card">
                     <div className="acc-list-row" onClick={() => setPage("compte-edit")}>
                       <span className="acc-list-ico acc-ico-blue"><FiUser size={17} /></span>
@@ -614,8 +613,7 @@ function App() {
                   </div>
 
                   {/* Section : Application */}
-                  <div className="acc-section-label-row">Application</div>
-                  <div className="acc-card acc-list-card">
+                  <div className="acc-card acc-list-card" style={{marginTop: '12px'}}>
                     <div className="acc-list-row" onClick={() => setPage("compte-about")}>
                       <span className="acc-list-ico acc-ico-blue"><FiTag size={17} /></span>
                       <span className="acc-list-label">Application Kivana Scanner</span>

@@ -28,7 +28,7 @@
 
 .acc-header {
   background: linear-gradient(155deg, #1565FF 0%, #0A84FF 100%);
-  padding: 52px 20px 28px;
+  padding: 24px 20px 22px;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -66,7 +66,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 26px;
+  margin-bottom: 16px;
 }
 
 .acc-header-title {
@@ -199,8 +199,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
-  min-height: 54px;
+  padding: 11px 16px;
+  min-height: 46px;
   cursor: pointer;
   transition: background 0.12s ease;
   -webkit-tap-highlight-color: transparent;
@@ -263,7 +263,7 @@
 
 .acc-body {
   background: #f2f2f7;
-  padding: 20px 16px 16px;
+  padding: 14px 16px 16px;
 }
 
 /* =====================================================
